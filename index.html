@@ -1,0 +1,1356 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<script>
+(function(){
+  try{
+    var t = localStorage.getItem('dicetidice_theme');
+    if(!t){ t = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'; }
+    document.documentElement.setAttribute('data-theme', t);
+  }catch(e){}
+})();
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#7a1e27">
+<meta name="description" content="Catalogo, statistiche, wishlist e randomizer per la tua collezione di giochi da tavolo.">
+<title>Dice ti Dice - Catalogo</title>
+<link rel="manifest" href="./manifest.json">
+<link rel="icon" href="./icon-192.png" sizes="192x192" type="image/png">
+<link rel="apple-touch-icon" href="./icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#faf3e7;
+  --surface:#ffffff;
+  --surface-alt:#f1e6d3;
+  --border:#e4d4b8;
+  --text:#2b2118;
+  --text-muted:#7a6d5c;
+  --primary:#7a1e27;
+  --primary-dark:#5c161d;
+  --primary-contrast:#fff8ee;
+  --accent:#c98a1f;
+  --secondary:#2f6b4f;
+  --danger:#b3312c;
+  --danger-dark:#8f2621;
+  --radius:16px;
+  --radius-sm:10px;
+  --shadow:0 6px 20px rgba(43,33,24,0.12);
+  --shadow-sm:0 2px 8px rgba(43,33,24,0.08);
+  --font-head:'Baloo 2', system-ui, sans-serif;
+  --font-body:'Manrope', system-ui, sans-serif;
+  --font-mono:'JetBrains Mono', ui-monospace, monospace;
+}
+:root[data-theme="dark"]{
+  --bg:#161009;
+  --surface:#241a10;
+  --surface-alt:#2e2114;
+  --border:#3d2c1a;
+  --text:#f3e9d8;
+  --text-muted:#b6a58a;
+  --primary:#e2626f;
+  --primary-dark:#c94a57;
+  --primary-contrast:#241a10;
+  --accent:#e3ac4d;
+  --secondary:#4fae82;
+  --danger:#e2726a;
+  --danger-dark:#c85c54;
+  --shadow:0 6px 24px rgba(0,0,0,0.45);
+  --shadow-sm:0 2px 10px rgba(0,0,0,0.35);
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--font-body);
+  -webkit-font-smoothing:antialiased;
+  min-height:100vh;
+  overflow-x:hidden;
+}
+h1,h2,h3,h4{font-family:var(--font-head); font-weight:700; margin:0 0 .4em; line-height:1.2;}
+p{margin:0 0 .8em; color:var(--text-muted);}
+a{color:inherit;}
+button{font-family:var(--font-body); cursor:pointer;}
+input,select,textarea{font-family:var(--font-body); font-size:1rem;}
+.muted{color:var(--text-muted); font-size:.9rem;}
+code{font-family:var(--font-mono); background:var(--surface-alt); padding:.1em .4em; border-radius:4px; font-size:.85em;}
+hr{border:none; border-top:1px solid var(--border); margin:1.2em 0;}
+
+/* Topbar */
+.topbar{
+  position:sticky; top:0; z-index:20;
+  display:flex; align-items:center; gap:12px;
+  padding:12px 16px;
+  background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+  color:var(--primary-contrast);
+  box-shadow:var(--shadow-sm);
+}
+.hamburger{
+  background:rgba(255,255,255,0.15); border:none; color:inherit;
+  width:42px; height:42px; border-radius:12px; font-size:1.3rem;
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0;
+}
+.topbar h1{font-size:1.15rem; margin:0; color:inherit; letter-spacing:.2px;}
+.topbar .dice{font-size:1.3rem; margin-right:2px;}
+
+/* Layout */
+.layout{display:flex; min-height:calc(100vh - 66px);}
+.sidebar{
+  position:fixed; top:0; left:0; bottom:0; width:280px; z-index:40;
+  background:var(--surface); border-right:1px solid var(--border);
+  transform:translateX(-100%); transition:transform .25s ease;
+  display:flex; flex-direction:column; padding:16px;
+  overflow-y:auto;
+}
+.sidebar.open{transform:translateX(0); box-shadow:var(--shadow);}
+.sidebar-overlay{
+  position:fixed; inset:0; background:rgba(20,14,8,0.5); z-index:35;
+  opacity:0; pointer-events:none; transition:opacity .2s ease;
+}
+.sidebar-overlay.show{opacity:1; pointer-events:auto;}
+.sidebar-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;}
+.sidebar-head strong{font-family:var(--font-head); font-size:1.1rem;}
+.close-sidebar{background:none; border:none; color:var(--text); font-size:1.4rem; line-height:1;}
+.nav-list{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:4px;}
+.nav-list a{
+  display:flex; align-items:center; gap:10px; padding:11px 12px; border-radius:var(--radius-sm);
+  text-decoration:none; color:var(--text); font-weight:600; font-size:.98rem;
+}
+.nav-list a .ic{font-size:1.15rem; width:22px; text-align:center;}
+.nav-list a:hover{background:var(--surface-alt);}
+.nav-list a.active{background:var(--primary); color:var(--primary-contrast);}
+.theme-toggle-row{
+  display:flex; align-items:center; justify-content:space-between;
+  margin-top:16px; padding:10px 12px; background:var(--surface-alt); border-radius:var(--radius-sm);
+}
+.theme-toggle-row button{
+  background:var(--primary); color:var(--primary-contrast); border:none; border-radius:20px;
+  padding:6px 14px; font-weight:700; font-size:.85rem;
+}
+.sync-bar{
+  margin-top:auto; padding-top:14px; border-top:1px solid var(--border);
+  display:flex; align-items:center; gap:8px;
+}
+.sync-bar button{
+  background:var(--surface-alt); border:1px solid var(--border); color:var(--text);
+  width:38px; height:38px; border-radius:10px; font-size:1.05rem;
+}
+.sync-dot{margin-left:auto; font-size:1.1rem; color:#8a8a8a;}
+.sync-dot[data-state="ok"]{color:#2f9e5c;}
+.sync-dot[data-state="error"]{color:#d64545;}
+.sync-dot[data-state="pending"]{color:#d6a527; animation:pulse 1s infinite;}
+@keyframes pulse{50%{opacity:.3;}}
+
+.content{flex:1; min-width:0;}
+.app{max-width:900px; margin:0 auto; padding:18px 16px 90px;}
+
+@media (min-width:960px){
+  .hamburger{display:none;}
+  .sidebar{position:sticky; top:0; height:100vh; transform:none; border-right:1px solid var(--border);}
+  .sidebar-overlay{display:none;}
+  .layout{display:flex;}
+  .close-sidebar{display:none;}
+  .app{padding:28px 32px 60px;}
+}
+
+/* Common components */
+.page-head{display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; margin-bottom:16px;}
+.btn-primary{
+  background:var(--primary); color:var(--primary-contrast); border:none; border-radius:var(--radius-sm);
+  padding:10px 18px; font-weight:700; font-size:.95rem; box-shadow:var(--shadow-sm);
+}
+.btn-secondary{
+  background:var(--surface); color:var(--text); border:1px solid var(--border); border-radius:var(--radius-sm);
+  padding:9px 16px; font-weight:600; font-size:.9rem;
+}
+.btn-danger{background:var(--danger); color:#fff; border:none; border-radius:var(--radius-sm); padding:10px 18px; font-weight:700;}
+.btn-link{background:none; border:none; color:var(--primary); font-weight:700; padding:6px 0; font-size:.9rem;}
+.btn-icon{background:var(--surface-alt); border:1px solid var(--border); border-radius:8px; width:34px; height:34px; color:var(--text);}
+.search-input{
+  width:100%; padding:11px 14px; border-radius:var(--radius-sm); border:1px solid var(--border);
+  background:var(--surface); color:var(--text); font-size:.95rem;
+}
+.search-wrap{margin-bottom:14px;}
+
+.chip-row{display:flex; flex-wrap:wrap; gap:8px;}
+.chip{
+  display:inline-flex; align-items:center; gap:4px; padding:6px 13px; border-radius:20px;
+  background:var(--surface-alt); border:1px solid var(--border); color:var(--text-muted); font-size:.82rem; font-weight:600;
+}
+.chip-btn{border:1px solid var(--border);}
+.chip-btn.active{background:var(--primary); color:var(--primary-contrast); border-color:var(--primary);}
+.chip.type-chip{background:var(--secondary); color:#fff; border-color:transparent;}
+.filters-block{margin-bottom:16px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:14px;}
+.filters-block h4{font-size:.85rem; text-transform:uppercase; letter-spacing:.4px; color:var(--text-muted); margin-bottom:8px;}
+.filters-block + .filters-block{margin-top:10px;}
+
+.game-card{
+  display:flex; align-items:center; gap:12px; background:var(--surface); border:1px solid var(--border);
+  border-radius:var(--radius); padding:14px; margin-bottom:10px; box-shadow:var(--shadow-sm);
+  text-decoration:none; color:inherit;
+}
+.game-card .die-badge{
+  width:42px; height:42px; border-radius:10px; background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+  color:var(--primary-contrast); display:flex; align-items:center; justify-content:center; font-size:1.2rem; flex-shrink:0;
+}
+.game-card-body{flex:1; min-width:0;}
+.game-card-body .name{font-family:var(--font-head); font-weight:700; font-size:1.05rem; display:flex; align-items:center; gap:8px; flex-wrap:wrap;}
+.game-card-body .meta{display:flex; flex-wrap:wrap; gap:6px; margin-top:6px;}
+.game-card-actions{display:flex; gap:6px; flex-shrink:0;}
+.badge-sale{background:var(--accent); color:#241a10; font-size:.7rem; font-weight:800; padding:3px 8px; border-radius:8px;}
+
+.empty-state{text-align:center; padding:40px 16px; color:var(--text-muted);}
+.empty-state .big{font-size:2.4rem; margin-bottom:8px;}
+
+/* Modal */
+.modal-backdrop{
+  position:fixed; inset:0; background:rgba(20,14,8,0.55); z-index:100;
+  display:flex; align-items:flex-end; justify-content:center; padding:0;
+}
+.modal{
+  background:var(--surface); width:100%; max-width:540px; max-height:92vh; overflow-y:auto;
+  border-radius:20px 20px 0 0; padding:22px; box-shadow:var(--shadow);
+  animation:slideUp .2s ease;
+}
+@keyframes slideUp{from{transform:translateY(24px); opacity:0;} to{transform:translateY(0); opacity:1;}}
+@media (min-width:640px){
+  .modal-backdrop{align-items:center;}
+  .modal{border-radius:20px;}
+}
+#modal-root:not(.open){display:none;}
+.modal-actions{display:flex; justify-content:flex-end; gap:10px; margin-top:18px; flex-wrap:wrap;}
+.field{margin-bottom:14px;}
+.field label{display:block; font-weight:700; font-size:.85rem; margin-bottom:6px;}
+.field input[type="text"],.field input[type="number"],.field input[type="date"],.field input[type="password"],.field textarea,.field select{
+  width:100%; padding:10px 12px; border-radius:var(--radius-sm); border:1px solid var(--border);
+  background:var(--bg); color:var(--text);
+}
+.field textarea{min-height:80px; resize:vertical;}
+.field-row{display:flex; gap:10px;}
+.field-row .field{flex:1;}
+.chip-check{display:inline-flex; position:relative;}
+.chip-check input{position:absolute; inset:0; opacity:0; margin:0; cursor:pointer;}
+.chip-check span{
+  display:inline-block; padding:6px 13px; border-radius:20px; border:1px solid var(--border);
+  background:var(--surface-alt); color:var(--text-muted); font-size:.82rem; font-weight:600; cursor:pointer;
+}
+.chip-check input:checked + span{background:var(--primary); color:var(--primary-contrast); border-color:var(--primary);}
+.chip-check input:focus-visible + span{outline:2px solid var(--accent);}
+.warn-box{
+  background:rgba(179,49,44,0.12); border:1px solid var(--danger); color:var(--text);
+  border-radius:var(--radius-sm); padding:12px 14px; margin-bottom:14px; font-size:.92rem;
+}
+:root[data-theme="dark"] .warn-box{background:rgba(226,114,106,0.14);}
+
+/* Toast */
+#toast-root{position:fixed; bottom:18px; left:50%; transform:translateX(-50%); z-index:200; display:flex; flex-direction:column; gap:8px; align-items:center;}
+.toast{background:var(--text); color:var(--bg); padding:10px 18px; border-radius:24px; font-size:.88rem; font-weight:600; box-shadow:var(--shadow); opacity:0; animation:toastIn .25s ease forwards, toastOut .25s ease 2.6s forwards;}
+@keyframes toastIn{from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);}}
+@keyframes toastOut{to{opacity:0; transform:translateY(-6px);}}
+
+/* Game detail */
+.detail-head{display:flex; align-items:flex-start; justify-content:space-between; gap:10px; flex-wrap:wrap;}
+.back-link{display:inline-flex; align-items:center; gap:6px; color:var(--text-muted); text-decoration:none; font-weight:700; font-size:.9rem; margin-bottom:10px;}
+.counter-card{
+  background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:20px; text-align:center; margin:18px 0;
+}
+.counter-num{font-family:var(--font-mono); font-size:3rem; font-weight:700; color:var(--primary); line-height:1;}
+.counter-label{color:var(--text-muted); font-size:.85rem; margin-bottom:10px; text-transform:uppercase; letter-spacing:.5px;}
+.counter-btns{display:flex; justify-content:center; gap:14px; margin-top:14px;}
+.counter-btn{
+  width:56px; height:56px; border-radius:50%; border:none; font-size:1.6rem; font-weight:700;
+  display:flex; align-items:center; justify-content:center; box-shadow:var(--shadow-sm);
+}
+.counter-btn.plus{background:var(--secondary); color:#fff;}
+.counter-btn.minus{background:var(--surface-alt); color:var(--text); border:1px solid var(--border);}
+.history-row{
+  display:flex; align-items:center; justify-content:space-between; padding:10px 12px; border-bottom:1px solid var(--border); gap:10px;
+}
+.history-row:last-child{border-bottom:none;}
+.history-row .who{font-weight:700;}
+.history-row .del-play{background:none; border:none; color:var(--text-muted); font-size:1rem;}
+
+/* Stats */
+.stat-table{width:100%; border-collapse:collapse; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); overflow:hidden;}
+.stat-table th,.stat-table td{padding:10px 12px; text-align:left; border-bottom:1px solid var(--border); font-size:.9rem;}
+.stat-table th{background:var(--surface-alt); font-family:var(--font-head); font-size:.8rem; text-transform:uppercase; letter-spacing:.4px;}
+.stat-table tr:last-child td{border-bottom:none;}
+.stat-table td.num,.stat-table th.num{text-align:center; font-family:var(--font-mono); font-weight:700;}
+.section-card{background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:16px; margin-bottom:20px; overflow-x:auto;}
+
+/* Wishlist / sell / designer cards */
+.item-card{background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:14px; margin-bottom:10px;}
+.item-card .top-row{display:flex; align-items:flex-start; justify-content:space-between; gap:10px;}
+.item-card .name{font-family:var(--font-head); font-weight:700; font-size:1.05rem;}
+.priority-alta{background:var(--danger); color:#fff;}
+.priority-media{background:var(--accent); color:#241a10;}
+.priority-bassa{background:var(--surface-alt); color:var(--text-muted);}
+.priority-badge{font-size:.7rem; font-weight:800; padding:3px 9px; border-radius:8px;}
+.item-actions{display:flex; gap:6px; flex-wrap:wrap; margin-top:10px;}
+.task-row{display:flex; align-items:center; gap:8px; padding:5px 0;}
+.task-row.done .task-text{text-decoration:line-through; color:var(--text-muted);}
+.task-row .del-task{margin-left:auto; background:none; border:none; color:var(--text-muted);}
+.phase-badge{font-size:.72rem; font-weight:800; padding:3px 9px; border-radius:8px; background:var(--secondary); color:#fff; text-transform:capitalize;}
+.tabs{display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap;}
+.tab-btn{background:var(--surface-alt); border:1px solid var(--border); border-radius:20px; padding:8px 16px; font-weight:700; font-size:.88rem; color:var(--text-muted);}
+.tab-btn.active{background:var(--primary); color:var(--primary-contrast); border-color:var(--primary);}
+
+/* Randomizer */
+.rand-stage{
+  background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:30px 20px; text-align:center; margin:18px 0; min-height:180px;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+}
+.rand-display{font-family:var(--font-head); font-size:1.7rem; font-weight:800; color:var(--primary); transition:transform .05s;}
+.rand-display.flip{transform:scale(1.04);}
+.rand-result-card{width:100%;}
+.rand-result-card .name{font-family:var(--font-head); font-size:1.8rem; font-weight:800; margin-bottom:8px;}
+.rand-icon{font-size:2.6rem; margin-bottom:10px;}
+
+.checklist-row{display:flex; align-items:center; gap:10px; padding:8px 4px; border-bottom:1px solid var(--border);}
+.checklist-row:last-child{border-bottom:none;}
+.checklist-row label{flex:1; font-weight:600; font-size:.92rem;}
+
+::-webkit-scrollbar{width:10px; height:10px;}
+::-webkit-scrollbar-thumb{background:var(--border); border-radius:6px;}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <button class="hamburger" data-action="toggle-sidebar" aria-label="Menu">☰</button>
+  <h1><span class="dice">🎲</span>Dice ti Dice - Catalogo</h1>
+</div>
+
+<div class="layout">
+  <div class="sidebar-overlay" data-action="close-sidebar"></div>
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-head">
+      <strong>🎲 Menu</strong>
+      <button class="close-sidebar" data-action="close-sidebar" aria-label="Chiudi">×</button>
+    </div>
+    <ul class="nav-list" id="nav-list">
+      <li><a href="#/list" data-page="list"><span class="ic">📚</span>Lista giochi</a></li>
+      <li><a href="#/stats" data-page="stats"><span class="ic">📊</span>Statistiche</a></li>
+      <li><a href="#/wishlist" data-page="wishlist"><span class="ic">💌</span>Wishlist</a></li>
+      <li><a href="#/sell" data-page="sell"><span class="ic">🏷️</span>Da rivendere</a></li>
+      <li><a href="#/designer" data-page="designer"><span class="ic">✏️</span>Game Designer</a></li>
+      <li><a href="#/randomizer" data-page="randomizer"><span class="ic">🎰</span>Randomizer</a></li>
+    </ul>
+    <div class="theme-toggle-row">
+      <span>Tema</span>
+      <button type="button" data-action="theme-toggle" id="theme-btn">🌙 Scuro</button>
+    </div>
+    <div class="sync-bar">
+      <button type="button" data-action="gist-pull" title="Scarica dal Gist">⬇</button>
+      <button type="button" data-action="gist-push" title="Carica sul Gist">⬆</button>
+      <button type="button" data-action="open-sync-setup" title="Configura sincronizzazione">⚙</button>
+      <span class="sync-dot" id="sync-status" data-state="idle" title="Sincronizzazione non configurata">●</span>
+    </div>
+  </nav>
+
+  <div class="content">
+    <main class="app" id="app"></main>
+  </div>
+</div>
+
+<div id="modal-root"></div>
+<div id="toast-root"></div>
+
+<script>
+(function(){
+'use strict';
+
+/* ---------- Costanti ---------- */
+var STORAGE_KEY = 'dicetidice_db_v1';
+var TOKEN_KEY = 'dicetidice_gh_token';
+var GIST_ID_KEY = 'dicetidice_gist_id';
+var THEME_KEY = 'dicetidice_theme';
+var GIST_FILENAME = 'dicetidice_catalogo_db.json';
+
+var MECHANICS = [
+  ['piazzamento-lavoratori','Piazzamento lavoratori'],
+  ['piazzamento-tessere','Piazzamento tessere'],
+  ['deck-building','Deck building'],
+  ['area-control','Area control'],
+  ['roll-and-write','Roll & write'],
+  ['cooperativo','Cooperativo'],
+  ['party','Party / Sociale'],
+  ['deduzione','Deduzione'],
+  ['gestione-mano','Gestione mano'],
+  ['draft','Draft'],
+  ['dadi','Dadi'],
+  ['gestione-risorse','Gestione risorse'],
+  ['bluff','Bluff'],
+  ['trattativa','Trattativa / Negoziazione'],
+  ['programmazione-azioni','Programmazione azioni'],
+  ['push-your-luck','Push your luck'],
+  ['costruzione-percorsi','Costruzione percorsi'],
+  ['motore','Costruzione motore (engine building)'],
+  ['memoria','Memoria'],
+  ['abilita-destrezza','Abilità / Destrezza'],
+  ['narrativo','Narrativo / Storytelling'],
+  ['sopravvivenza','Sopravvivenza'],
+  ['legacy','Legacy / Campagna'],
+  ['trick-taking','Trick-taking (presa di carte)'],
+  ['pattern-building','Pattern building'],
+  ['movimento-punti','Movimento a punti'],
+  ['semi-cooperativo','Semi-cooperativo'],
+  ['traditore','Uno contro tutti (traditore)'],
+  ['asta','Asta / Bidding'],
+  ['set-collection','Set collection'],
+  ['simulazione','Simulazione'],
+  ['tempo-reale','Tempo reale'],
+  ['parole','Word game']
+];
+var MECH_MAP = {}; MECHANICS.forEach(function(m){ MECH_MAP[m[0]] = m[1]; });
+
+var TYPES = [
+  ['german','German (Euro)'],
+  ['american','American (Ameritrash)'],
+  ['party','Party'],
+  ['gateway-pesante','Gateway pesante (Cinghiale)'],
+  ['medio','Peso medio'],
+  ['leggero','Leggero / Filler'],
+  ['astratto','Astratto'],
+  ['family','Family'],
+  ['wargame','Wargame'],
+  ['cooperativo-puro','Cooperativo puro']
+];
+var TYPE_MAP = {}; TYPES.forEach(function(t){ TYPE_MAP[t[0]] = t[1]; });
+
+var DESIGN_PHASES = [
+  ['idea','Idea'],
+  ['prototipo','Prototipo'],
+  ['playtest','Playtest'],
+  ['rifinitura','Rifinitura'],
+  ['pubblicato','Pubblicato']
+];
+var PHASE_MAP = {}; DESIGN_PHASES.forEach(function(p){ PHASE_MAP[p[0]] = p[1]; });
+
+/* ---------- Utility ---------- */
+function uid(prefix){ return (prefix ? prefix + '_' : '') + Date.now().toString(36) + Math.random().toString(36).slice(2,8); }
+function escapeHtml(str){
+  return String(str == null ? '' : str).replace(/[&<>"']/g, function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+  });
+}
+function todayISO(){ return new Date().toISOString().slice(0,10); }
+function formatDate(iso){
+  if(!iso) return '—';
+  var parts = iso.split('-');
+  if(parts.length !== 3) return iso;
+  return parts[2] + '/' + parts[1] + '/' + parts[0];
+}
+
+/* ---------- Storage ---------- */
+function defaultDB(){
+  return {
+    schemaVersion: 1,
+    games: [],
+    wishlist: [],
+    players: [ {id:'niky', name:'Niky'}, {id:'erika', name:'Erika'} ],
+    designer: { projects: [], ideas: [] }
+  };
+}
+function normalizeDB(raw){
+  var d = defaultDB();
+  if(raw && typeof raw === 'object'){
+    d.games = Array.isArray(raw.games) ? raw.games : [];
+    d.wishlist = Array.isArray(raw.wishlist) ? raw.wishlist : [];
+    d.players = Array.isArray(raw.players) && raw.players.length ? raw.players : d.players;
+    d.designer = raw.designer && typeof raw.designer === 'object' ? raw.designer : d.designer;
+    if(!Array.isArray(d.designer.projects)) d.designer.projects = [];
+    if(!Array.isArray(d.designer.ideas)) d.designer.ideas = [];
+  }
+  d.games.forEach(function(g){
+    if(!Array.isArray(g.plays)) g.plays = [];
+    if(!Array.isArray(g.mechanics)) g.mechanics = [];
+    if(typeof g.forSale !== 'boolean') g.forSale = false;
+  });
+  return d;
+}
+function loadDB(){
+  try{
+    var raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return defaultDB();
+    return normalizeDB(JSON.parse(raw));
+  }catch(e){ return defaultDB(); }
+}
+function saveDB(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(DB)); }
+
+var DB = loadDB();
+
+function findGame(id){ return DB.games.find(function(g){ return g.id === id; }); }
+function findPlayer(id){ return DB.players.find(function(p){ return p.id === id; }); }
+function findProject(id){ return DB.designer.projects.find(function(p){ return p.id === id; }); }
+
+/* ---------- Stato UI effimero (non persistito) ---------- */
+var UI = {
+  listSearch: '',
+  mechFilters: new Set(),
+  typeFilters: new Set(),
+  ideaSearch: '',
+  designerTab: 'progetti',
+  sellTab: 'vendita',
+  rand: { types: new Set(), mechs: new Set(), playerCount: '', spinning: false, resultId: null }
+};
+
+/* ---------- Toast ---------- */
+function toast(msg){
+  var root = document.getElementById('toast-root');
+  var el = document.createElement('div');
+  el.className = 'toast';
+  el.textContent = msg;
+  root.appendChild(el);
+  setTimeout(function(){ el.remove(); }, 3000);
+}
+
+/* ---------- Modal ---------- */
+function openModal(html){
+  var root = document.getElementById('modal-root');
+  root.innerHTML = '<div class="modal-backdrop"><div class="modal">' + html + '</div></div>';
+  root.classList.add('open');
+}
+function closeModal(){
+  var root = document.getElementById('modal-root');
+  root.classList.remove('open');
+  root.innerHTML = '';
+}
+
+/* ---------- Chip helpers ---------- */
+function checkChips(name, options, selected){
+  return options.map(function(o){
+    var checked = selected.indexOf(o[0]) !== -1;
+    return '<label class="chip-check"><input type="checkbox" name="' + name + '" value="' + o[0] + '"' + (checked ? ' checked' : '') + '><span>' + escapeHtml(o[1]) + '</span></label>';
+  }).join('');
+}
+function radioChips(name, options, selected){
+  return options.map(function(o){
+    var checked = selected === o[0];
+    return '<label class="chip-check"><input type="radio" name="' + name + '" value="' + o[0] + '"' + (checked ? ' checked' : '') + '><span>' + escapeHtml(o[1]) + '</span></label>';
+  }).join('');
+}
+
+/* ================= GAME FORM MODAL ================= */
+function openGameModal(mode, gameId, promoteFromWishlistId, prefillName){
+  var g = gameId ? findGame(gameId) : null;
+  var name = g ? g.name : (prefillName || '');
+  var mechs = g ? g.mechanics : [];
+  var type = g ? g.type : '';
+  var minP = g && g.minPlayers != null ? g.minPlayers : '';
+  var maxP = g && g.maxPlayers != null ? g.maxPlayers : '';
+  var html = ''
+    + '<h3>' + (mode === 'edit' ? 'Modifica gioco' : 'Nuovo gioco') + '</h3>'
+    + '<form data-form="game-form" data-mode="' + mode + '" data-id="' + (gameId || '') + '" data-promote="' + (promoteFromWishlistId || '') + '">'
+    + '<div class="field"><label>Nome del gioco</label><input type="text" name="name" required value="' + escapeHtml(name) + '" placeholder="Es. Wingspan"></div>'
+    + '<div class="field"><label>Tipologia</label><div class="chip-row">' + radioChips('type', TYPES, type) + '</div></div>'
+    + '<div class="field"><label>Meccaniche</label><div class="chip-row">' + checkChips('mechanics', MECHANICS, mechs) + '</div></div>'
+    + '<div class="field-row">'
+    + '<div class="field"><label>Giocatori min. (opzionale)</label><input type="number" min="1" name="minPlayers" value="' + escapeHtml(minP) + '"></div>'
+    + '<div class="field"><label>Giocatori max. (opzionale)</label><input type="number" min="1" name="maxPlayers" value="' + escapeHtml(maxP) + '"></div>'
+    + '</div>'
+    + '<div class="modal-actions"><button type="button" class="btn-secondary" data-action="modal-close">Annulla</button><button type="submit" class="btn-primary">Salva gioco</button></div>'
+    + '</form>';
+  openModal(html);
+}
+
+function handleGameFormSubmit(form){
+  var fd = new FormData(form);
+  var mode = form.dataset.mode;
+  var id = form.dataset.id;
+  var promoteFrom = form.dataset.promote;
+  var name = (fd.get('name') || '').toString().trim();
+  if(!name){ toast('Il nome è obbligatorio'); return; }
+  var mechanics = fd.getAll('mechanics');
+  var type = fd.get('type') || '';
+  var minPlayers = fd.get('minPlayers') ? Number(fd.get('minPlayers')) : null;
+  var maxPlayers = fd.get('maxPlayers') ? Number(fd.get('maxPlayers')) : null;
+
+  if(mode === 'edit'){
+    var g = findGame(id);
+    if(g){
+      g.name = name; g.mechanics = mechanics; g.type = type;
+      g.minPlayers = minPlayers; g.maxPlayers = maxPlayers;
+    }
+  } else {
+    DB.games.push({
+      id: uid('game'), name: name, mechanics: mechanics, type: type,
+      minPlayers: minPlayers, maxPlayers: maxPlayers,
+      playTime: null, publisher: null, image: null,
+      forSale: false, forSaleNote: '', plays: [], createdAt: Date.now()
+    });
+    if(promoteFrom){
+      DB.wishlist = DB.wishlist.filter(function(w){ return w.id !== promoteFrom; });
+    }
+  }
+  saveDB(); closeModal(); render();
+  toast(mode === 'edit' ? 'Gioco aggiornato' : 'Gioco aggiunto al catalogo');
+}
+
+function openDeleteGameModal(id){
+  var g = findGame(id);
+  if(!g) return;
+  var html = ''
+    + '<h3>⚠️ Eliminare "' + escapeHtml(g.name) + '"?</h3>'
+    + '<div class="warn-box">Verranno cancellati definitivamente anche lo storico delle partite (' + g.plays.length + ') e tutti i dati associati a questo gioco. <strong>Questa azione non può essere annullata.</strong></div>'
+    + '<div class="modal-actions"><button type="button" class="btn-secondary" data-action="modal-close">Annulla</button><button type="button" class="btn-danger" data-action="confirm-delete-game" data-id="' + id + '">Elimina definitivamente</button></div>';
+  openModal(html);
+}
+
+/* ================= LISTA GIOCHI ================= */
+function filteredGames(){
+  var q = UI.listSearch.trim().toLowerCase();
+  return DB.games.filter(function(g){
+    if(q && g.name.toLowerCase().indexOf(q) === -1) return false;
+    if(UI.typeFilters.size && !UI.typeFilters.has(g.type)) return false;
+    if(UI.mechFilters.size){
+      for(var it = UI.mechFilters.values(), m; !(m = it.next()).done; ){
+        if(g.mechanics.indexOf(m.value) === -1) return false;
+      }
+    }
+    return true;
+  }).sort(function(a,b){ return a.name.localeCompare(b.name, 'it'); });
+}
+
+function gameCardHtml(g){
+  var mechLabels = g.mechanics.slice(0,4).map(function(m){ return '<span class="chip">' + escapeHtml(MECH_MAP[m] || m) + '</span>'; }).join('');
+  var extra = g.mechanics.length > 4 ? '<span class="chip">+' + (g.mechanics.length - 4) + '</span>' : '';
+  return '<div class="game-card">'
+    + '<a href="#/game/' + g.id + '" class="die-badge">🎲</a>'
+    + '<a href="#/game/' + g.id + '" class="game-card-body" style="text-decoration:none;color:inherit;">'
+    + '<div class="name">' + escapeHtml(g.name) + (g.forSale ? '<span class="badge-sale">IN VENDITA</span>' : '') + '</div>'
+    + '<div class="meta">' + (g.type ? '<span class="chip type-chip">' + escapeHtml(TYPE_MAP[g.type] || g.type) + '</span>' : '') + mechLabels + extra + '</div>'
+    + '<div class="muted" style="margin-top:6px;font-size:.82rem;">🎲 ' + g.plays.length + ' partite giocate</div>'
+    + '</a>'
+    + '<div class="game-card-actions">'
+    + '<button class="btn-icon" data-action="open-edit-game" data-id="' + g.id + '" title="Modifica">✏️</button>'
+    + '<button class="btn-icon" data-action="open-delete-game" data-id="' + g.id + '" title="Elimina">🗑️</button>'
+    + '</div></div>';
+}
+
+function gameListResultsHtml(){
+  var list = filteredGames();
+  if(!list.length){
+    return '<div class="empty-state"><div class="big">🎲</div><p>Nessun gioco trovato' + (UI.listSearch || UI.mechFilters.size || UI.typeFilters.size ? ' con questi filtri.' : '. Aggiungi il tuo primo gioco!') + '</p></div>';
+  }
+  return list.map(gameCardHtml).join('');
+}
+function updateGameListResults(){
+  var el = document.getElementById('game-list-results');
+  if(el) el.innerHTML = gameListResultsHtml();
+}
+
+function renderListPage(){
+  var typeChips = TYPES.map(function(t){
+    return '<button type="button" class="chip chip-btn' + (UI.typeFilters.has(t[0]) ? ' active' : '') + '" data-action="toggle-type-filter" data-value="' + t[0] + '">' + escapeHtml(t[1]) + '</button>';
+  }).join('');
+  var mechChips = MECHANICS.map(function(m){
+    return '<button type="button" class="chip chip-btn' + (UI.mechFilters.has(m[0]) ? ' active' : '') + '" data-action="toggle-mech-filter" data-value="' + m[0] + '">' + escapeHtml(m[1]) + '</button>';
+  }).join('');
+  var hasFilters = UI.mechFilters.size || UI.typeFilters.size || UI.listSearch;
+  return ''
+    + '<div class="page-head"><h2>📚 Lista giochi</h2><button class="btn-primary" data-action="open-add-game">+ Nuovo gioco</button></div>'
+    + '<div class="search-wrap"><input type="text" class="search-input" placeholder="Cerca per nome…" value="' + escapeHtml(UI.listSearch) + '" data-search="games"></div>'
+    + '<div class="filters-block"><h4>Tipologia</h4><div class="chip-row">' + typeChips + '</div></div>'
+    + '<div class="filters-block"><h4>Meccaniche</h4><div class="chip-row">' + mechChips + '</div></div>'
+    + (hasFilters ? '<div style="margin-bottom:12px;"><button class="btn-link" data-action="clear-filters">✕ Cancella filtri e ricerca</button></div>' : '')
+    + '<div id="game-list-results">' + gameListResultsHtml() + '</div>';
+}
+
+/* ================= DETTAGLIO GIOCO ================= */
+function openWinnerModal(gameId){
+  var g = findGame(gameId);
+  if(!g) return;
+  var choices = DB.players.map(function(p){
+    return '<button type="button" class="chip chip-btn" data-action="select-winner" data-game="' + gameId + '" data-winner="' + p.id + '">' + escapeHtml(p.name) + '</button>';
+  }).join('') + '<button type="button" class="chip chip-btn" data-action="select-winner" data-game="' + gameId + '" data-winner="">🤝 Nessuno / Pareggio</button>';
+  var html = ''
+    + '<h3>Registra partita</h3><p class="muted">' + escapeHtml(g.name) + '</p>'
+    + '<div class="field"><label>Data</label><input type="date" id="play-date" value="' + todayISO() + '"></div>'
+    + '<div class="field"><label>Chi ha vinto?</label><div class="chip-row">' + choices + '</div></div>'
+    + '<button type="button" class="btn-link" data-action="prompt-add-player" data-game="' + gameId + '">+ Aggiungi profilo giocatore</button>'
+    + '<div class="modal-actions"><button type="button" class="btn-secondary" data-action="modal-close">Annulla</button></div>';
+  openModal(html);
+}
+
+function renderGameDetail(id){
+  var g = findGame(id);
+  if(!g){
+    return '<div class="empty-state"><div class="big">🎲</div><p>Gioco non trovato.</p><a class="btn-link" href="#/list">← Torna alla lista</a></div>';
+  }
+  var mechLabels = g.mechanics.map(function(m){ return '<span class="chip">' + escapeHtml(MECH_MAP[m] || m) + '</span>'; }).join('');
+  var plays = g.plays.slice().sort(function(a,b){ return (b.date||'').localeCompare(a.date||''); });
+  var history = plays.length ? plays.map(function(p){
+    var winnerName = p.winnerId ? (findPlayer(p.winnerId) ? findPlayer(p.winnerId).name : '(profilo rimosso)') : 'Pareggio / nessuno';
+    return '<div class="history-row"><span>' + formatDate(p.date) + '</span><span class="who">' + escapeHtml(winnerName) + '</span><button class="del-play" data-action="delete-play" data-game="' + g.id + '" data-play="' + p.id + '" title="Rimuovi">✕</button></div>';
+  }).join('') : '<p class="muted" style="padding:10px 0;">Ancora nessuna partita registrata.</p>';
+
+  return ''
+    + '<a class="back-link" href="#/list">← Torna alla lista</a>'
+    + '<div class="detail-head"><h2>' + escapeHtml(g.name) + (g.forSale ? '<span class="badge-sale" style="margin-left:8px;">IN VENDITA</span>' : '') + '</h2>'
+    + '<div class="game-card-actions"><button class="btn-icon" data-action="open-edit-game" data-id="' + g.id + '" title="Modifica">✏️</button><button class="btn-icon" data-action="open-delete-game" data-id="' + g.id + '" title="Elimina">🗑️</button></div></div>'
+    + (g.type ? '<span class="chip type-chip">' + escapeHtml(TYPE_MAP[g.type] || g.type) + '</span>' : '')
+    + (g.minPlayers || g.maxPlayers ? '<span class="chip" style="margin-left:6px;">👥 ' + (g.minPlayers||'?') + '–' + (g.maxPlayers||'?') + '</span>' : '')
+    + '<div class="chip-row" style="margin-top:10px;">' + mechLabels + '</div>'
+    + '<div class="counter-card">'
+    + '<div class="counter-label">Volte giocate</div>'
+    + '<div class="counter-num">' + g.plays.length + '</div>'
+    + '<div class="counter-btns">'
+    + '<button class="counter-btn minus" data-action="game-play-dec" data-id="' + g.id + '" title="Correggi (-1)">−</button>'
+    + '<button class="counter-btn plus" data-action="game-play-inc" data-id="' + g.id + '" title="Registra partita">+</button>'
+    + '</div></div>'
+    + '<h3>Storico partite</h3>'
+    + '<div class="section-card">' + history + '</div>';
+}
+
+/* ================= STATISTICHE ================= */
+function renderStatsPage(){
+  var games = DB.games.slice().sort(function(a,b){ return b.plays.length - a.plays.length; });
+  var gamesRows = games.length ? games.map(function(g){
+    return '<tr><td><a href="#/game/' + g.id + '">' + escapeHtml(g.name) + '</a></td><td class="num">' + g.plays.length + '</td></tr>';
+  }).join('') : '<tr><td colspan="2" class="muted">Nessun gioco in catalogo.</td></tr>';
+
+  var winsByPlayer = {}; DB.players.forEach(function(p){ winsByPlayer[p.id] = 0; });
+  var draws = 0;
+  DB.games.forEach(function(g){ g.plays.forEach(function(p){
+    if(p.winnerId && winsByPlayer.hasOwnProperty(p.winnerId)) winsByPlayer[p.winnerId]++;
+    else if(!p.winnerId) draws++;
+  }); });
+  var playersRanked = DB.players.slice().sort(function(a,b){ return winsByPlayer[b.id] - winsByPlayer[a.id]; });
+  var winsRows = playersRanked.map(function(p){
+    return '<tr><td>' + escapeHtml(p.name) + '</td><td class="num">' + winsByPlayer[p.id] + '</td></tr>';
+  }).join('') + '<tr><td>🤝 Pareggio / nessuno</td><td class="num">' + draws + '</td></tr>';
+
+  var playedGames = DB.games.filter(function(g){ return g.plays.length > 0; }).sort(function(a,b){ return b.plays.length - a.plays.length; });
+  var perGameHeader = '<th>Gioco</th>' + DB.players.map(function(p){ return '<th class="num">' + escapeHtml(p.name) + '</th>'; }).join('') + '<th class="num">🤝</th>';
+  var perGameRows = playedGames.length ? playedGames.map(function(g){
+    var cells = DB.players.map(function(p){
+      var c = g.plays.filter(function(pl){ return pl.winnerId === p.id; }).length;
+      return '<td class="num">' + c + '</td>';
+    }).join('');
+    var drawCount = g.plays.filter(function(pl){ return !pl.winnerId; }).length;
+    return '<tr><td><a href="#/game/' + g.id + '">' + escapeHtml(g.name) + '</a></td>' + cells + '<td class="num">' + drawCount + '</td></tr>';
+  }).join('') : '';
+
+  return ''
+    + '<h2>📊 Statistiche</h2>'
+    + '<div class="section-card"><h3>Classifica giochi per partite</h3><table class="stat-table"><thead><tr><th>Gioco</th><th class="num">Partite</th></tr></thead><tbody>' + gamesRows + '</tbody></table></div>'
+    + '<div class="section-card"><h3>Vittorie totali per profilo</h3><table class="stat-table"><thead><tr><th>Profilo</th><th class="num">Vittorie</th></tr></thead><tbody>' + winsRows + '</tbody></table></div>'
+    + (playedGames.length ? '<div class="section-card"><h3>Vittorie per gioco</h3><table class="stat-table"><thead><tr>' + perGameHeader + '</tr></thead><tbody>' + perGameRows + '</tbody></table></div>' : '');
+}
+
+/* ================= WISHLIST ================= */
+function openWishlistModal(mode, id){
+  var w = id ? DB.wishlist.find(function(x){ return x.id === id; }) : null;
+  var html = ''
+    + '<h3>' + (mode === 'edit' ? 'Modifica voce' : 'Nuova voce wishlist') + '</h3>'
+    + '<form data-form="wishlist-form" data-mode="' + mode + '" data-id="' + (id || '') + '">'
+    + '<div class="field"><label>Nome del gioco</label><input type="text" name="name" required value="' + escapeHtml(w ? w.name : '') + '"></div>'
+    + '<div class="field"><label>Priorità</label><select name="priority">'
+    + ['alta','media','bassa'].map(function(p){ return '<option value="' + p + '"' + (w && w.priority === p ? ' selected' : (!w && p==='media' ? ' selected' : '')) + '>' + p.charAt(0).toUpperCase()+p.slice(1) + '</option>'; }).join('')
+    + '</select></div>'
+    + '<div class="field"><label>Note</label><textarea name="notes" placeholder="Edizione, prezzo, dove trovarlo…">' + escapeHtml(w ? w.notes : '') + '</textarea></div>'
+    + '<div class="modal-actions"><button type="button" class="btn-secondary" data-action="modal-close">Annulla</button><button type="submit" class="btn-primary">Salva</button></div>'
+    + '</form>';
+  openModal(html);
+}
+function handleWishlistFormSubmit(form){
+  var fd = new FormData(form);
+  var name = (fd.get('name')||'').toString().trim();
+  if(!name){ toast('Il nome è obbligatorio'); return; }
+  var mode = form.dataset.mode, id = form.dataset.id;
+  if(mode === 'edit'){
+    var w = DB.wishlist.find(function(x){ return x.id === id; });
+    if(w){ w.name = name; w.priority = fd.get('priority'); w.notes = fd.get('notes') || ''; }
+  } else {
+    DB.wishlist.push({ id: uid('wish'), name: name, priority: fd.get('priority') || 'media', notes: fd.get('notes') || '', createdAt: Date.now() });
+  }
+  saveDB(); closeModal(); render(); toast('Wishlist aggiornata');
+}
+
+function renderWishlistPage(){
+  var order = {alta:0, media:1, bassa:2};
+  var list = DB.wishlist.slice().sort(function(a,b){ return (order[a.priority]||1) - (order[b.priority]||1) || a.name.localeCompare(b.name,'it'); });
+  var body = list.length ? list.map(function(w){
+    return '<div class="item-card"><div class="top-row"><div><div class="name">' + escapeHtml(w.name) + '</div><span class="priority-badge priority-' + w.priority + '">' + w.priority.toUpperCase() + '</span></div></div>'
+      + (w.notes ? '<p style="margin-top:8px;">' + escapeHtml(w.notes) + '</p>' : '')
+      + '<div class="item-actions">'
+      + '<button class="btn-secondary" data-action="promote-wishlist" data-id="' + w.id + '">🎲 Promuovi a gioco</button>'
+      + '<button class="btn-secondary" data-action="open-edit-wishlist" data-id="' + w.id + '">✏️ Modifica</button>'
+      + '<button class="btn-secondary" data-action="delete-wishlist" data-id="' + w.id + '">🗑️ Elimina</button>'
+      + '</div></div>';
+  }).join('') : '<div class="empty-state"><div class="big">💌</div><p>Nessun gioco in wishlist. Aggiungi quello che vorresti comprare!</p></div>';
+
+  return '<div class="page-head"><h2>💌 Wishlist</h2><button class="btn-primary" data-action="open-add-wishlist">+ Aggiungi</button></div>' + body;
+}
+
+/* ================= DA RIVENDERE ================= */
+function renderSellPage(){
+  var forSale = DB.games.filter(function(g){ return g.forSale; }).sort(function(a,b){ return a.name.localeCompare(b.name,'it'); });
+  var others = DB.games.filter(function(g){ return !g.forSale; }).sort(function(a,b){ return a.name.localeCompare(b.name,'it'); });
+
+  var saleBody = forSale.length ? forSale.map(function(g){
+    return '<div class="item-card"><div class="top-row"><div class="name">' + escapeHtml(g.name) + '</div>'
+      + '<button class="btn-secondary" data-action="toggle-forsale" data-id="' + g.id + '">↩️ Rimuovi dalla vendita</button></div>'
+      + '<div class="field" style="margin-top:10px;"><label>Nota (prezzo, condizioni…)</label><textarea data-action-blur="save-sale-note" data-id="' + g.id + '" placeholder="Es. 25€, come nuovo, completo">' + escapeHtml(g.forSaleNote || '') + '</textarea></div>'
+      + '</div>';
+  }).join('') : '<div class="empty-state"><div class="big">🏷️</div><p>Nessun gioco contrassegnato per la vendita.</p></div>';
+
+  var addBody = others.length ? others.map(function(g){
+    return '<div class="checklist-row"><input type="checkbox" id="sell-' + g.id + '" data-action="toggle-forsale" data-id="' + g.id + '"><label for="sell-' + g.id + '">' + escapeHtml(g.name) + '</label></div>';
+  }).join('') : '<p class="muted">Tutti i giochi posseduti sono già in vendita.</p>';
+
+  return ''
+    + '<h2>🏷️ Da rivendere</h2>'
+    + '<div class="tabs">'
+    + '<button class="tab-btn' + (UI.sellTab === 'vendita' ? ' active' : '') + '" data-action="sell-tab" data-value="vendita">In vendita (' + forSale.length + ')</button>'
+    + '<button class="tab-btn' + (UI.sellTab === 'aggiungi' ? ' active' : '') + '" data-action="sell-tab" data-value="aggiungi">Aggiungi dalla collezione</button>'
+    + '</div>'
+    + (UI.sellTab === 'vendita' ? saleBody : '<div class="section-card">' + addBody + '</div>');
+}
+
+/* ================= GAME DESIGNER ================= */
+function openProjectModal(mode, id){
+  var p = id ? findProject(id) : null;
+  var html = ''
+    + '<h3>' + (mode === 'edit' ? 'Modifica progetto' : 'Nuovo progetto in sviluppo') + '</h3>'
+    + '<form data-form="project-form" data-mode="' + mode + '" data-id="' + (id || '') + '">'
+    + '<div class="field"><label>Nome del progetto</label><input type="text" name="name" required value="' + escapeHtml(p ? p.name : '') + '"></div>'
+    + '<div class="field"><label>Fase</label><select name="phase">' + DESIGN_PHASES.map(function(ph){ return '<option value="' + ph[0] + '"' + (p && p.phase === ph[0] ? ' selected' : '') + '>' + ph[1] + '</option>'; }).join('') + '</select></div>'
+    + '<div class="field"><label>Note</label><textarea name="notes">' + escapeHtml(p ? p.notes : '') + '</textarea></div>'
+    + '<div class="modal-actions"><button type="button" class="btn-secondary" data-action="modal-close">Annulla</button><button type="submit" class="btn-primary">Salva</button></div>'
+    + '</form>';
+  openModal(html);
+}
+function handleProjectFormSubmit(form){
+  var fd = new FormData(form);
+  var name = (fd.get('name')||'').toString().trim();
+  if(!name){ toast('Il nome è obbligatorio'); return; }
+  var mode = form.dataset.mode, id = form.dataset.id;
+  if(mode === 'edit'){
+    var p = findProject(id);
+    if(p){ p.name = name; p.phase = fd.get('phase'); p.notes = fd.get('notes') || ''; }
+  } else {
+    DB.designer.projects.push({ id: uid('proj'), name: name, phase: fd.get('phase') || 'idea', notes: fd.get('notes') || '', tasks: [], createdAt: Date.now() });
+  }
+  saveDB(); closeModal(); render(); toast('Progetto salvato');
+}
+
+function openIdeaModal(){
+  var projectOptions = '<option value="">— Idea generale —</option>' + DB.designer.projects.map(function(p){ return '<option value="' + p.id + '">' + escapeHtml(p.name) + '</option>'; }).join('');
+  var html = ''
+    + '<h3>Nuova idea</h3>'
+    + '<form data-form="idea-form">'
+    + '<div class="field"><label>Titolo</label><input type="text" name="title" required></div>'
+    + '<div class="field"><label>Nota</label><textarea name="note"></textarea></div>'
+    + '<div class="field-row">'
+    + '<div class="field"><label>Data</label><input type="date" name="date" value="' + todayISO() + '"></div>'
+    + '<div class="field"><label>Collegata a progetto</label><select name="projectId">' + projectOptions + '</select></div>'
+    + '</div>'
+    + '<div class="modal-actions"><button type="button" class="btn-secondary" data-action="modal-close">Annulla</button><button type="submit" class="btn-primary">Salva idea</button></div>'
+    + '</form>';
+  openModal(html);
+}
+function handleIdeaFormSubmit(form){
+  var fd = new FormData(form);
+  var title = (fd.get('title')||'').toString().trim();
+  if(!title){ toast('Il titolo è obbligatorio'); return; }
+  DB.designer.ideas.push({ id: uid('idea'), title: title, note: fd.get('note') || '', date: fd.get('date') || todayISO(), projectId: fd.get('projectId') || null });
+  saveDB(); closeModal(); render(); toast('Idea salvata');
+}
+
+function ideaCardHtml(idea){
+  return '<div class="item-card"><div class="top-row"><div><div class="name">' + escapeHtml(idea.title) + '</div><span class="muted">' + formatDate(idea.date) + '</span></div>'
+    + '<button class="btn-icon" data-action="delete-idea" data-id="' + idea.id + '" title="Elimina">🗑️</button></div>'
+    + (idea.note ? '<p style="margin-top:8px;">' + escapeHtml(idea.note) + '</p>' : '') + '</div>';
+}
+function matchesIdeaSearch(idea){
+  var q = UI.ideaSearch.trim().toLowerCase();
+  if(!q) return true;
+  return (idea.title + ' ' + (idea.note||'')).toLowerCase().indexOf(q) !== -1;
+}
+function ideaListsHtml(){
+  var projectIdeas = DB.designer.ideas.filter(function(i){ return i.projectId && matchesIdeaSearch(i); });
+  var generalIdeas = DB.designer.ideas.filter(function(i){ return !i.projectId && matchesIdeaSearch(i); });
+  var byProject = {};
+  projectIdeas.forEach(function(i){ (byProject[i.projectId] = byProject[i.projectId] || []).push(i); });
+  var projectBlocks = Object.keys(byProject).map(function(pid){
+    var p = findProject(pid);
+    var label = p ? p.name : '(progetto eliminato)';
+    return '<h4>' + escapeHtml(label) + '</h4>' + byProject[pid].map(ideaCardHtml).join('');
+  }).join('') || '<p class="muted">Nessuna idea legata a un progetto.</p>';
+  var generalBlock = generalIdeas.length ? generalIdeas.map(ideaCardHtml).join('') : '<p class="muted">Nessuna idea generale.</p>';
+  return { projectBlocks: projectBlocks, generalBlock: generalBlock };
+}
+function updateIdeaLists(){
+  var res = ideaListsHtml();
+  var a = document.getElementById('idea-project-list'); if(a) a.innerHTML = res.projectBlocks;
+  var b = document.getElementById('idea-general-list'); if(b) b.innerHTML = res.generalBlock;
+}
+
+function renderDesignerPage(){
+  var projects = DB.designer.projects;
+  var projectsBody = projects.length ? projects.map(function(p){
+    var tasksHtml = (p.tasks||[]).map(function(t){
+      return '<div class="task-row' + (t.done ? ' done' : '') + '"><input type="checkbox" data-action="toggle-task" data-project="' + p.id + '" data-task="' + t.id + '"' + (t.done ? ' checked' : '') + '><span class="task-text">' + escapeHtml(t.text) + '</span><button class="del-task" data-action="delete-task" data-project="' + p.id + '" data-task="' + t.id + '">✕</button></div>';
+    }).join('') || '<p class="muted">Nessun task ancora.</p>';
+    return '<div class="item-card">'
+      + '<div class="top-row"><div><div class="name">' + escapeHtml(p.name) + '</div><span class="phase-badge">' + escapeHtml(PHASE_MAP[p.phase] || p.phase) + '</span></div>'
+      + '<div class="game-card-actions"><button class="btn-icon" data-action="open-edit-project" data-id="' + p.id + '" title="Modifica">✏️</button><button class="btn-icon" data-action="delete-project" data-id="' + p.id + '" title="Elimina">🗑️</button></div></div>'
+      + '<div class="field" style="margin-top:10px;"><label>Fase</label><select data-action-change="change-project-phase" data-id="' + p.id + '">' + DESIGN_PHASES.map(function(ph){ return '<option value="' + ph[0] + '"' + (p.phase === ph[0] ? ' selected' : '') + '>' + ph[1] + '</option>'; }).join('') + '</select></div>'
+      + (p.notes ? '<p>' + escapeHtml(p.notes) + '</p>' : '')
+      + '<h4 style="margin-top:12px;">Cosa manca da fare</h4>' + tasksHtml
+      + '<button class="btn-link" data-action="add-task" data-project="' + p.id + '">+ Aggiungi task</button>'
+      + '</div>';
+  }).join('') : '<div class="empty-state"><div class="big">✏️</div><p>Nessun progetto in sviluppo. Inizia a tracciare la tua prossima creazione!</p></div>';
+
+  var ideaLists = ideaListsHtml();
+
+  return ''
+    + '<h2>✏️ Game Designer</h2>'
+    + '<div class="tabs">'
+    + '<button class="tab-btn' + (UI.designerTab === 'progetti' ? ' active' : '') + '" data-action="designer-tab" data-value="progetti">🛠️ Progetti in sviluppo</button>'
+    + '<button class="tab-btn' + (UI.designerTab === 'idee' ? ' active' : '') + '" data-action="designer-tab" data-value="idee">💡 Idee</button>'
+    + '</div>'
+    + (UI.designerTab === 'progetti'
+      ? '<div class="page-head"><span></span><button class="btn-primary" data-action="open-add-project">+ Nuovo progetto</button></div>' + projectsBody
+      : ''
+        + '<div class="page-head"><span></span><button class="btn-primary" data-action="open-add-idea">+ Nuova idea</button></div>'
+        + '<div class="search-wrap"><input type="text" class="search-input" placeholder="Cerca tra tutte le idee…" value="' + escapeHtml(UI.ideaSearch) + '" data-search="ideas"></div>'
+        + '<h3>Idee di progetto</h3><div id="idea-project-list">' + ideaLists.projectBlocks + '</div>'
+        + '<h3 style="margin-top:20px;">Idee generali</h3><div id="idea-general-list">' + ideaLists.generalBlock + '</div>');
+}
+
+/* ================= RANDOMIZER ================= */
+function eligibleGames(){
+  return DB.games.filter(function(g){ return !g.forSale; }).filter(function(g){
+    if(UI.rand.types.size && !UI.rand.types.has(g.type)) return false;
+    if(UI.rand.mechs.size){
+      for(var it = UI.rand.mechs.values(), m; !(m = it.next()).done; ){
+        if(g.mechanics.indexOf(m.value) === -1) return false;
+      }
+    }
+    if(UI.rand.playerCount){
+      var n = Number(UI.rand.playerCount);
+      if(g.minPlayers && n < g.minPlayers) return false;
+      if(g.maxPlayers && n > g.maxPlayers) return false;
+    }
+    return true;
+  });
+}
+function randStageHtml(){
+  var pool = eligibleGames();
+  if(UI.rand.spinning){
+    return '<div class="rand-icon">🎰</div><div class="rand-display flip" id="rand-display">…</div>';
+  }
+  if(UI.rand.resultId){
+    var g = findGame(UI.rand.resultId);
+    if(g){
+      return '<div class="rand-result-card"><div class="rand-icon">🎉</div><div class="name">' + escapeHtml(g.name) + '</div>'
+        + (g.type ? '<span class="chip type-chip">' + escapeHtml(TYPE_MAP[g.type] || g.type) + '</span>' : '')
+        + '<div class="chip-row" style="justify-content:center;margin-top:8px;">' + g.mechanics.map(function(m){ return '<span class="chip">' + escapeHtml(MECH_MAP[m]||m) + '</span>'; }).join('') + '</div>'
+        + '<div style="margin-top:14px;"><a class="btn-secondary" href="#/game/' + g.id + '" style="text-decoration:none;">Apri scheda gioco</a></div></div>';
+    }
+  }
+  return '<div class="rand-icon">🎲</div><p style="margin:0;">' + (pool.length ? pool.length + ' giochi disponibili con questi filtri.' : 'Nessun gioco disponibile con questi filtri.') + '</p>';
+}
+function updateRandStage(){
+  var el = document.getElementById('rand-stage');
+  if(el) el.innerHTML = randStageHtml();
+  var countEl = document.getElementById('rand-count');
+  if(countEl) countEl.textContent = eligibleGames().length + ' giochi idonei';
+}
+
+function drawGame(){
+  var pool = eligibleGames();
+  if(!pool.length){ toast('Nessun gioco disponibile con questi filtri'); return; }
+  var final = pool[Math.floor(Math.random() * pool.length)];
+  UI.rand.spinning = true; UI.rand.resultId = null;
+  updateRandStage();
+  var steps = 0, maxSteps = 20;
+  function tick(){
+    steps++;
+    var display = document.getElementById('rand-display');
+    if(display){
+      var r = pool[Math.floor(Math.random() * pool.length)];
+      display.textContent = r.name;
+      display.classList.remove('flip'); void display.offsetWidth; display.classList.add('flip');
+    }
+    if(steps >= maxSteps){
+      UI.rand.spinning = false; UI.rand.resultId = final.id;
+      updateRandStage();
+      return;
+    }
+    setTimeout(tick, 55 + (steps / maxSteps) * 260);
+  }
+  tick();
+}
+
+function renderRandomizerPage(){
+  var typeChips = TYPES.map(function(t){
+    return '<button type="button" class="chip chip-btn' + (UI.rand.types.has(t[0]) ? ' active' : '') + '" data-action="toggle-rand-type" data-value="' + t[0] + '">' + escapeHtml(t[1]) + '</button>';
+  }).join('');
+  var mechChips = MECHANICS.map(function(m){
+    return '<button type="button" class="chip chip-btn' + (UI.rand.mechs.has(m[0]) ? ' active' : '') + '" data-action="toggle-rand-mech" data-value="' + m[0] + '">' + escapeHtml(m[1]) + '</button>';
+  }).join('');
+  UI.rand.spinning = false; UI.rand.resultId = null;
+  return ''
+    + '<h2>🎰 Randomizer</h2>'
+    + '<p class="muted">Pesca a caso un gioco dalla tua collezione (esclusi quelli in vendita).</p>'
+    + '<div class="filters-block"><h4>Filtro per numero di giocatori (opzionale)</h4><input type="number" min="1" class="search-input" style="max-width:160px;" placeholder="Es. 4" value="' + escapeHtml(UI.rand.playerCount) + '" data-search="randomizer"></div>'
+    + '<div class="filters-block"><h4>Tipologia</h4><div class="chip-row">' + typeChips + '</div></div>'
+    + '<div class="filters-block"><h4>Meccaniche</h4><div class="chip-row">' + mechChips + '</div></div>'
+    + '<p class="muted" id="rand-count">' + eligibleGames().length + ' giochi idonei</p>'
+    + '<div class="rand-stage" id="rand-stage">' + randStageHtml() + '</div>'
+    + '<div style="text-align:center;"><button class="btn-primary" data-action="draw-game" style="font-size:1.05rem;padding:14px 30px;">🎲 Pesca un gioco!</button></div>';
+}
+
+/* ================= SYNC GIST ================= */
+function getToken(){ return localStorage.getItem(TOKEN_KEY) || ''; }
+function setSyncStatus(state, title){
+  var el = document.getElementById('sync-status');
+  if(!el) return;
+  el.dataset.state = state;
+  var titles = { idle:'Sincronizzazione non configurata', pending:'Sincronizzazione in corso…', ok:'Sincronizzato', error:'Errore di sincronizzazione' };
+  el.title = title || titles[state] || '';
+}
+function apiHeaders(){
+  return { 'Authorization': 'token ' + getToken(), 'Content-Type': 'application/json', 'Accept': 'application/vnd.github+json' };
+}
+function findOrCreateGist(){
+  var token = getToken();
+  if(!token) return Promise.reject(new Error('Nessun token configurato. Apri ⚙ e collega il tuo token GitHub.'));
+  var existing = localStorage.getItem(GIST_ID_KEY);
+  if(existing) return Promise.resolve(existing);
+  setSyncStatus('pending');
+  return fetch('https://api.github.com/gists?per_page=100', { headers: apiHeaders() })
+    .then(function(res){ if(!res.ok) throw new Error('Impossibile leggere i Gist (' + res.status + ')'); return res.json(); })
+    .then(function(list){
+      var found = list.find(function(g){ return g.files && g.files[GIST_FILENAME]; });
+      if(found){ localStorage.setItem(GIST_ID_KEY, found.id); return found.id; }
+      var body = { description: 'Dice ti Dice - Catalogo (backup dati)', public: false, files: {} };
+      body.files[GIST_FILENAME] = { content: JSON.stringify(DB, null, 2) };
+      return fetch('https://api.github.com/gists', { method:'POST', headers: apiHeaders(), body: JSON.stringify(body) })
+        .then(function(res){ if(!res.ok) throw new Error('Impossibile creare il Gist (' + res.status + ')'); return res.json(); })
+        .then(function(created){ localStorage.setItem(GIST_ID_KEY, created.id); return created.id; });
+    });
+}
+function gistPush(){
+  setSyncStatus('pending');
+  findOrCreateGist().then(function(id){
+    var body = { files: {} };
+    body.files[GIST_FILENAME] = { content: JSON.stringify(DB, null, 2) };
+    return fetch('https://api.github.com/gists/' + id, { method:'PATCH', headers: apiHeaders(), body: JSON.stringify(body) })
+      .then(function(res){ if(!res.ok) throw new Error('Push fallito (' + res.status + ')'); });
+  }).then(function(){ setSyncStatus('ok'); toast('Dati inviati al Gist ✓'); })
+  .catch(function(err){ setSyncStatus('error'); toast('Errore push: ' + err.message); });
+}
+function gistPull(){
+  if(!confirm('Sovrascrivere i dati locali con quelli salvati nel Gist? Le modifiche non sincronizzate andranno perse.')) return;
+  setSyncStatus('pending');
+  findOrCreateGist().then(function(id){
+    return fetch('https://api.github.com/gists/' + id, { headers: apiHeaders() })
+      .then(function(res){ if(!res.ok) throw new Error('Pull fallito (' + res.status + ')'); return res.json(); })
+      .then(function(data){
+        var file = data.files && data.files[GIST_FILENAME];
+        if(!file) throw new Error('File non trovato nel Gist');
+        DB = normalizeDB(JSON.parse(file.content));
+        saveDB();
+      });
+  }).then(function(){ setSyncStatus('ok'); toast('Dati importati dal Gist ✓'); render(); })
+  .catch(function(err){ setSyncStatus('error'); toast('Errore pull: ' + err.message); });
+}
+function openSyncSetupModal(){
+  var hasToken = !!getToken();
+  var html = ''
+    + '<h3>⚙️ Sincronizzazione (GitHub Gist)</h3>'
+    + '<p class="muted">Incolla un Personal Access Token GitHub con scope <code>gist</code>. Il token resta solo su questo dispositivo (salvato in localStorage), non è mai scritto nel codice.</p>'
+    + '<form data-form="token-form">'
+    + '<div class="field"><label>Personal Access Token</label><input type="password" name="token" autocomplete="off" placeholder="' + (hasToken ? '•••••••••••• (già salvato, lascia vuoto per non cambiarlo)' : 'ghp_...') + '"></div>'
+    + '<div class="modal-actions"><button type="button" class="btn-secondary" data-action="modal-close">Chiudi</button><button type="submit" class="btn-primary">Salva e collega</button></div>'
+    + '</form>'
+    + '<hr><h4>Backup manuale (JSON)</h4>'
+    + '<div class="modal-actions" style="justify-content:flex-start;flex-wrap:wrap;">'
+    + '<button type="button" class="btn-secondary" data-action="export-json">⬇️ Esporta backup</button>'
+    + '<label class="btn-secondary" style="display:inline-flex;align-items:center;">⬆️ Importa backup<input type="file" accept="application/json" data-action-change="import-json" style="display:none"></label>'
+    + '</div>';
+  openModal(html);
+}
+function exportJson(){
+  var blob = new Blob([JSON.stringify(DB, null, 2)], { type:'application/json' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url; a.download = 'dicetidice_backup_' + todayISO() + '.json';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
+  toast('Backup esportato');
+}
+function importJsonFile(file){
+  var reader = new FileReader();
+  reader.onload = function(){
+    try{
+      var parsed = JSON.parse(reader.result);
+      if(!confirm('Sovrascrivere tutti i dati locali con quelli del file importato?')) return;
+      DB = normalizeDB(parsed); saveDB(); closeModal(); render();
+      toast('Backup importato ✓');
+    }catch(err){ toast('File non valido: ' + err.message); }
+  };
+  reader.readAsText(file);
+}
+
+/* ================= ROUTER ================= */
+var app = document.getElementById('app');
+function currentRoute(){
+  var hash = location.hash.replace(/^#\/?/, '');
+  return hash ? hash.split('/') : ['list'];
+}
+function updateActiveNav(page){
+  document.querySelectorAll('#nav-list a').forEach(function(a){
+    a.classList.toggle('active', a.dataset.page === page);
+  });
+}
+function render(){
+  var parts = currentRoute();
+  var page = parts[0] || 'list';
+  var html;
+  switch(page){
+    case 'list': html = renderListPage(); break;
+    case 'game': html = renderGameDetail(parts[1]); break;
+    case 'stats': html = renderStatsPage(); break;
+    case 'wishlist': html = renderWishlistPage(); break;
+    case 'sell': html = renderSellPage(); break;
+    case 'designer': html = renderDesignerPage(); break;
+    case 'randomizer': html = renderRandomizerPage(); break;
+    default: html = renderListPage(); page = 'list';
+  }
+  app.innerHTML = html;
+  updateActiveNav(page);
+  window.scrollTo(0,0);
+  closeSidebar();
+}
+
+/* ================= SIDEBAR / TEMA ================= */
+var sidebar = document.getElementById('sidebar');
+var overlay = document.querySelector('.sidebar-overlay');
+function openSidebar(){ sidebar.classList.add('open'); overlay.classList.add('show'); }
+function closeSidebar(){ if(window.innerWidth < 960){ sidebar.classList.remove('open'); overlay.classList.remove('show'); } }
+function toggleSidebar(){ sidebar.classList.contains('open') ? closeSidebar() : openSidebar(); }
+
+function currentTheme(){ return document.documentElement.getAttribute('data-theme') || 'light'; }
+function applyThemeButtonLabel(){
+  var btn = document.getElementById('theme-btn');
+  if(btn) btn.textContent = currentTheme() === 'dark' ? '☀️ Chiaro' : '🌙 Scuro';
+}
+function toggleTheme(){
+  var next = currentTheme() === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem(THEME_KEY, next);
+  applyThemeButtonLabel();
+}
+
+/* ================= EVENT DELEGATION ================= */
+document.addEventListener('click', function(e){
+  if(e.target.classList && e.target.classList.contains('modal-backdrop')){ closeModal(); return; }
+  var el = e.target.closest('[data-action]');
+  if(!el) return;
+  var action = el.dataset.action;
+  var id = el.dataset.id;
+  switch(action){
+    case 'toggle-sidebar': toggleSidebar(); break;
+    case 'close-sidebar': closeSidebar(); break;
+    case 'theme-toggle': toggleTheme(); break;
+    case 'modal-close': closeModal(); break;
+
+    case 'open-add-game': openGameModal('add'); break;
+    case 'open-edit-game': openGameModal('edit', id); break;
+    case 'open-delete-game': openDeleteGameModal(id); break;
+    case 'confirm-delete-game':
+      DB.games = DB.games.filter(function(g){ return g.id !== id; });
+      saveDB(); closeModal();
+      if(location.hash.indexOf('#/game/') === 0) location.hash = '#/list'; else render();
+      toast('Gioco eliminato');
+      break;
+
+    case 'toggle-mech-filter':
+      UI.mechFilters.has(el.dataset.value) ? UI.mechFilters.delete(el.dataset.value) : UI.mechFilters.add(el.dataset.value);
+      render(); break;
+    case 'toggle-type-filter':
+      UI.typeFilters.has(el.dataset.value) ? UI.typeFilters.delete(el.dataset.value) : UI.typeFilters.add(el.dataset.value);
+      render(); break;
+    case 'clear-filters':
+      UI.listSearch = ''; UI.mechFilters.clear(); UI.typeFilters.clear(); render(); break;
+
+    case 'game-play-inc': openWinnerModal(id); break;
+    case 'game-play-dec': {
+      var gd = findGame(id);
+      if(gd && gd.plays.length){ gd.plays.pop(); saveDB(); render(); }
+      break;
+    }
+    case 'select-winner': {
+      var gameId = el.dataset.game;
+      var winnerId = el.dataset.winner;
+      var dateInput = document.getElementById('play-date');
+      var date = (dateInput && dateInput.value) || todayISO();
+      var gg = findGame(gameId);
+      if(gg){ gg.plays.push({ id: uid('play'), date: date, winnerId: winnerId || null }); saveDB(); }
+      closeModal(); render(); toast('Partita registrata!');
+      break;
+    }
+    case 'delete-play': {
+      var gm = findGame(el.dataset.game);
+      if(gm){ gm.plays = gm.plays.filter(function(p){ return p.id !== el.dataset.play; }); saveDB(); render(); }
+      break;
+    }
+    case 'prompt-add-player': {
+      var name = prompt('Nome del nuovo profilo giocatore:');
+      if(name && name.trim()){
+        DB.players.push({ id: uid('player'), name: name.trim() });
+        saveDB();
+        openWinnerModal(el.dataset.game);
+      }
+      break;
+    }
+
+    case 'open-add-wishlist': openWishlistModal('add'); break;
+    case 'open-edit-wishlist': openWishlistModal('edit', id); break;
+    case 'delete-wishlist':
+      if(confirm('Eliminare questa voce dalla wishlist?')){
+        DB.wishlist = DB.wishlist.filter(function(w){ return w.id !== id; });
+        saveDB(); render();
+      }
+      break;
+    case 'promote-wishlist': {
+      var w = DB.wishlist.find(function(x){ return x.id === id; });
+      if(w) openGameModal('add', null, w.id, w.name);
+      break;
+    }
+
+    case 'sell-tab': UI.sellTab = el.dataset.value; render(); break;
+    case 'toggle-forsale': {
+      var gs = findGame(id);
+      if(gs){ gs.forSale = !gs.forSale; saveDB(); render(); }
+      break;
+    }
+
+    case 'designer-tab': UI.designerTab = el.dataset.value; render(); break;
+    case 'open-add-project': openProjectModal('add'); break;
+    case 'open-edit-project': openProjectModal('edit', id); break;
+    case 'delete-project':
+      if(confirm('Eliminare questo progetto e tutti i suoi task?')){
+        DB.designer.projects = DB.designer.projects.filter(function(p){ return p.id !== id; });
+        DB.designer.ideas.forEach(function(i){ if(i.projectId === id) i.projectId = null; });
+        saveDB(); render();
+      }
+      break;
+    case 'add-task': {
+      var text = prompt('Descrizione del task da fare:');
+      if(text && text.trim()){
+        var proj = findProject(el.dataset.project);
+        if(proj){ proj.tasks = proj.tasks || []; proj.tasks.push({ id: uid('task'), text: text.trim(), done:false }); saveDB(); render(); }
+      }
+      break;
+    }
+    case 'delete-task': {
+      var proj2 = findProject(el.dataset.project);
+      if(proj2){ proj2.tasks = (proj2.tasks||[]).filter(function(t){ return t.id !== el.dataset.task; }); saveDB(); render(); }
+      break;
+    }
+    case 'open-add-idea': openIdeaModal(); break;
+    case 'delete-idea':
+      if(confirm('Eliminare questa idea?')){
+        DB.designer.ideas = DB.designer.ideas.filter(function(i){ return i.id !== id; });
+        saveDB(); render();
+      }
+      break;
+
+    case 'draw-game': drawGame(); break;
+    case 'toggle-rand-type':
+      UI.rand.types.has(el.dataset.value) ? UI.rand.types.delete(el.dataset.value) : UI.rand.types.add(el.dataset.value);
+      UI.rand.resultId = null; render(); break;
+    case 'toggle-rand-mech':
+      UI.rand.mechs.has(el.dataset.value) ? UI.rand.mechs.delete(el.dataset.value) : UI.rand.mechs.add(el.dataset.value);
+      UI.rand.resultId = null; render(); break;
+
+    case 'open-sync-setup': openSyncSetupModal(); break;
+    case 'gist-push': gistPush(); break;
+    case 'gist-pull': gistPull(); break;
+    case 'export-json': exportJson(); break;
+  }
+});
+
+document.addEventListener('change', function(e){
+  var el = e.target;
+  if(el.matches('select[data-action-change="change-project-phase"]')){
+    var p = findProject(el.dataset.id);
+    if(p){ p.phase = el.value; saveDB(); render(); }
+    return;
+  }
+  if(el.matches('input[data-action="toggle-task"]')){
+    var proj = findProject(el.dataset.project);
+    var task = proj && (proj.tasks||[]).find(function(t){ return t.id === el.dataset.task; });
+    if(task){ task.done = el.checked; saveDB(); render(); }
+    return;
+  }
+  if(el.matches('textarea[data-action-blur="save-sale-note"]')){
+    var g = findGame(el.dataset.id);
+    if(g){ g.forSaleNote = el.value; saveDB(); }
+    return;
+  }
+  if(el.matches('input[data-action-change="import-json"]') && el.files && el.files[0]){
+    importJsonFile(el.files[0]);
+    return;
+  }
+});
+
+document.addEventListener('submit', function(e){
+  var form = e.target;
+  if(form.dataset.form){
+    e.preventDefault();
+    switch(form.dataset.form){
+      case 'game-form': handleGameFormSubmit(form); break;
+      case 'wishlist-form': handleWishlistFormSubmit(form); break;
+      case 'project-form': handleProjectFormSubmit(form); break;
+      case 'idea-form': handleIdeaFormSubmit(form); break;
+      case 'token-form': {
+        var fd = new FormData(form);
+        var val = (fd.get('token') || '').toString().trim();
+        if(val) localStorage.setItem(TOKEN_KEY, val);
+        closeModal();
+        findOrCreateGist().then(function(){ setSyncStatus('ok'); toast('Collegato al Gist ✓'); })
+          .catch(function(err){ setSyncStatus('error'); toast('Errore: ' + err.message); });
+        break;
+      }
+    }
+  }
+});
+
+document.addEventListener('input', function(e){
+  var el = e.target;
+  if(el.matches('input[data-search="games"]')){ UI.listSearch = el.value; updateGameListResults(); return; }
+  if(el.matches('input[data-search="ideas"]')){ UI.ideaSearch = el.value; updateIdeaLists(); return; }
+  if(el.matches('input[data-search="randomizer"]')){ UI.rand.playerCount = el.value; UI.rand.resultId = null; updateRandStage(); return; }
+});
+
+window.addEventListener('hashchange', render);
+window.addEventListener('resize', function(){ if(window.innerWidth >= 960){ sidebar.classList.remove('open'); overlay.classList.remove('show'); } });
+
+/* ================= INIT ================= */
+applyThemeButtonLabel();
+if(getToken() && localStorage.getItem(GIST_ID_KEY)) setSyncStatus('idle', 'Collegato — usa ⬇/⬆ per sincronizzare');
+if(!location.hash) location.hash = '#/list';
+render();
+
+if('serviceWorker' in navigator){
+  window.addEventListener('load', function(){
+    navigator.serviceWorker.register('./sw.js').catch(function(){});
+  });
+}
+
+})();
+</script>
+</body>
+</html>
