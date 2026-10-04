@@ -198,6 +198,15 @@ hr{border:none; border-top:1px solid var(--border); margin:1.2em 0;}
   width:42px; height:42px; border-radius:10px; background:linear-gradient(135deg,var(--primary),var(--primary-dark));
   color:var(--primary-contrast); display:flex; align-items:center; justify-content:center; font-size:1.2rem; flex-shrink:0;
 }
+.game-card .cover-thumb{
+  width:42px; height:56px; border-radius:8px; object-fit:cover; flex-shrink:0; background:var(--surface-alt);
+  box-shadow:var(--shadow-sm);
+}
+.detail-cover{
+  width:120px; height:160px; object-fit:cover; border-radius:var(--radius-sm); box-shadow:var(--shadow); flex-shrink:0;
+  background:var(--surface-alt);
+}
+.detail-head-row{display:flex; gap:14px; align-items:flex-start;}
 .game-card-body{flex:1; min-width:0;}
 .game-card-body .name{font-family:var(--font-head); font-weight:700; font-size:1.05rem; display:flex; align-items:center; gap:8px; flex-wrap:wrap;}
 .game-card-body .meta{display:flex; flex-wrap:wrap; gap:6px; margin-top:6px;}
@@ -543,6 +552,7 @@ function openGameModal(mode, gameId, promoteFromWishlistId, prefillName){
   var type = g ? g.type : '';
   var minP = g && g.minPlayers != null ? g.minPlayers : '';
   var maxP = g && g.maxPlayers != null ? g.maxPlayers : '';
+  var playT = g && g.playTime != null ? g.playTime : '';
   var html = ''
     + '<h3>' + (mode === 'edit' ? 'Modifica gioco' : 'Nuovo gioco') + '</h3>'
     + '<form data-form="game-form" data-mode="' + mode + '" data-id="' + (gameId || '') + '" data-promote="' + (promoteFromWishlistId || '') + '">'
@@ -552,6 +562,7 @@ function openGameModal(mode, gameId, promoteFromWishlistId, prefillName){
     + '<div class="field-row">'
     + '<div class="field"><label>Giocatori min. (opzionale)</label><input type="number" min="1" name="minPlayers" value="' + escapeHtml(minP) + '"></div>'
     + '<div class="field"><label>Giocatori max. (opzionale)</label><input type="number" min="1" name="maxPlayers" value="' + escapeHtml(maxP) + '"></div>'
+    + '<div class="field"><label>Durata (min, opzionale)</label><input type="number" min="1" name="playTime" value="' + escapeHtml(playT) + '"></div>'
     + '</div>'
     + '<div class="modal-actions"><button type="button" class="btn-secondary" data-action="modal-close">Annulla</button><button type="submit" class="btn-primary">Salva gioco</button></div>'
     + '</form>';
@@ -569,18 +580,19 @@ function handleGameFormSubmit(form){
   var type = fd.get('type') || '';
   var minPlayers = fd.get('minPlayers') ? Number(fd.get('minPlayers')) : null;
   var maxPlayers = fd.get('maxPlayers') ? Number(fd.get('maxPlayers')) : null;
+  var playTime = fd.get('playTime') ? Number(fd.get('playTime')) : null;
 
   if(mode === 'edit'){
     var g = findGame(id);
     if(g){
       g.name = name; g.mechanics = mechanics; g.type = type;
-      g.minPlayers = minPlayers; g.maxPlayers = maxPlayers;
+      g.minPlayers = minPlayers; g.maxPlayers = maxPlayers; g.playTime = playTime;
     }
   } else {
     DB.games.push({
       id: uid('game'), name: name, mechanics: mechanics, type: type,
       minPlayers: minPlayers, maxPlayers: maxPlayers,
-      playTime: null, publisher: null, image: null,
+      playTime: playTime, publisher: null, image: null, bggId: null,
       forSale: false, forSaleNote: '', plays: [], createdAt: Date.now()
     });
     if(promoteFrom){
@@ -619,8 +631,11 @@ function filteredGames(){
 function gameCardHtml(g){
   var mechLabels = g.mechanics.slice(0,4).map(function(m){ return '<span class="chip">' + escapeHtml(MECH_MAP[m] || m) + '</span>'; }).join('');
   var extra = g.mechanics.length > 4 ? '<span class="chip">+' + (g.mechanics.length - 4) + '</span>' : '';
+  var thumb = g.image
+    ? '<a href="#/game/' + g.id + '"><img class="cover-thumb" src="' + escapeHtml(g.image) + '" alt="" loading="lazy" onerror="this.outerHTML=\'<span class=&quot;die-badge&quot;>🎲</span>\'"></a>'
+    : '<a href="#/game/' + g.id + '" class="die-badge">🎲</a>';
   return '<div class="game-card">'
-    + '<a href="#/game/' + g.id + '" class="die-badge">🎲</a>'
+    + thumb
     + '<a href="#/game/' + g.id + '" class="game-card-body" style="text-decoration:none;color:inherit;">'
     + '<div class="name">' + escapeHtml(g.name) + (g.forSale ? '<span class="badge-sale">IN VENDITA</span>' : '') + '</div>'
     + '<div class="meta">' + (g.type ? '<span class="chip type-chip">' + escapeHtml(TYPE_MAP[g.type] || g.type) + '</span>' : '') + mechLabels + extra + '</div>'
@@ -635,7 +650,10 @@ function gameCardHtml(g){
 function gameListResultsHtml(){
   var list = filteredGames();
   if(!list.length){
-    return '<div class="empty-state"><div class="big">🎲</div><p>Nessun gioco trovato' + (UI.listSearch || UI.mechFilters.size || UI.typeFilters.size ? ' con questi filtri.' : '. Aggiungi il tuo primo gioco!') + '</p></div>';
+    var hasFilters = UI.listSearch || UI.mechFilters.size || UI.typeFilters.size;
+    return '<div class="empty-state"><div class="big">🎲</div><p>Nessun gioco trovato' + (hasFilters ? ' con questi filtri.' : '. Aggiungi il tuo primo gioco!') + '</p>'
+      + (hasFilters ? '' : '<button type="button" class="btn-secondary" data-action="open-sync-setup">📚 Oppure importa la libreria BGG (426 giochi)</button>')
+      + '</div>';
   }
   return list.map(gameCardHtml).join('');
 }
@@ -689,13 +707,19 @@ function renderGameDetail(id){
     return '<div class="history-row"><span>' + formatDate(p.date) + '</span><span class="who">' + escapeHtml(winnerName) + '</span><button class="del-play" data-action="delete-play" data-game="' + g.id + '" data-play="' + p.id + '" title="Rimuovi">✕</button></div>';
   }).join('') : '<p class="muted" style="padding:10px 0;">Ancora nessuna partita registrata.</p>';
 
+  var cover = g.image ? '<img class="detail-cover" src="' + escapeHtml(g.image) + '" alt="" onerror="this.remove()">' : '';
   return ''
     + '<a class="back-link" href="#/list">← Torna alla lista</a>'
+    + '<div class="detail-head-row">'
+    + cover
+    + '<div style="flex:1;min-width:0;">'
     + '<div class="detail-head"><h2>' + escapeHtml(g.name) + (g.forSale ? '<span class="badge-sale" style="margin-left:8px;">IN VENDITA</span>' : '') + '</h2>'
     + '<div class="game-card-actions"><button class="btn-icon" data-action="open-edit-game" data-id="' + g.id + '" title="Modifica">✏️</button><button class="btn-icon" data-action="open-delete-game" data-id="' + g.id + '" title="Elimina">🗑️</button></div></div>'
     + (g.type ? '<span class="chip type-chip">' + escapeHtml(TYPE_MAP[g.type] || g.type) + '</span>' : '')
     + (g.minPlayers || g.maxPlayers ? '<span class="chip" style="margin-left:6px;">👥 ' + (g.minPlayers||'?') + '–' + (g.maxPlayers||'?') + '</span>' : '')
+    + (g.playTime ? '<span class="chip" style="margin-left:6px;">⏱️ ' + g.playTime + ' min</span>' : '')
     + '<div class="chip-row" style="margin-top:10px;">' + mechLabels + '</div>'
+    + '</div></div>'
     + '<div class="counter-card">'
     + '<div class="counter-label">Volte giocate</div>'
     + '<div class="counter-num">' + g.plays.length + '</div>'
@@ -1077,6 +1101,11 @@ function openSyncSetupModal(){
     + '<div class="modal-actions" style="justify-content:flex-start;flex-wrap:wrap;">'
     + '<button type="button" class="btn-secondary" data-action="export-json">⬇️ Esporta backup</button>'
     + '<label class="btn-secondary" style="display:inline-flex;align-items:center;">⬆️ Importa backup<input type="file" accept="application/json" data-action-change="import-json" style="display:none"></label>'
+    + '</div>'
+    + '<hr><h4>Libreria BGG</h4>'
+    + '<p class="muted">Importa un elenco precaricato di 426 giochi (nome, copertina, giocatori, durata, meccaniche) preso da BoardGameGeek. I giochi già presenti in catalogo non vengono duplicati.</p>'
+    + '<div class="modal-actions" style="justify-content:flex-start;">'
+    + '<button type="button" class="btn-secondary" data-action="import-bgg-library">📚 Importa libreria BGG</button>'
     + '</div>';
   openModal(html);
 }
@@ -1100,6 +1129,32 @@ function importJsonFile(file){
     }catch(err){ toast('File non valido: ' + err.message); }
   };
   reader.readAsText(file);
+}
+function importBggLibrary(){
+  if(!confirm('Importare la libreria BGG (426 giochi con copertine)? I giochi già presenti nel catalogo (stesso bggId) non verranno duplicati.')) return;
+  fetch('./data/bgg_games.json').then(function(res){
+    if(!res.ok) throw new Error('File non trovato (' + res.status + ')');
+    return res.json();
+  }).then(function(list){
+    var existingBggIds = {};
+    DB.games.forEach(function(g){ if(g.bggId) existingBggIds[g.bggId] = true; });
+    var added = 0;
+    list.forEach(function(item){
+      if(existingBggIds[item.bggId]) return;
+      DB.games.push({
+        id: uid('game'), name: item.name, mechanics: item.mechanics || [], type: item.type || '',
+        minPlayers: item.minPlayers != null ? item.minPlayers : null,
+        maxPlayers: item.maxPlayers != null ? item.maxPlayers : null,
+        playTime: item.playTime != null ? item.playTime : null,
+        publisher: item.publisher || null, image: item.image || null, bggId: item.bggId || null,
+        forSale: false, forSaleNote: '', plays: [], createdAt: Date.now()
+      });
+      existingBggIds[item.bggId] = true;
+      added++;
+    });
+    saveDB(); closeModal(); render();
+    toast(added + ' giochi importati dalla libreria BGG' + (added < list.length ? ' (' + (list.length - added) + ' già presenti)' : ''));
+  }).catch(function(err){ toast('Errore import libreria: ' + err.message); });
 }
 
 /* ================= ROUTER ================= */
@@ -1279,6 +1334,7 @@ document.addEventListener('click', function(e){
     case 'gist-push': gistPush(); break;
     case 'gist-pull': gistPull(); break;
     case 'export-json': exportJson(); break;
+    case 'import-bgg-library': importBggLibrary(); break;
   }
 });
 

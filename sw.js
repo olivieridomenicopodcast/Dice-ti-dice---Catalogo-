@@ -1,5 +1,5 @@
 // Service worker minimale: cache-first per l'app shell, funzionamento offline.
-const CACHE_VERSION = 'dicetidice-v1';
+const CACHE_VERSION = 'dicetidice-v2';
 const APP_SHELL = [
   './',
   './index.html',
