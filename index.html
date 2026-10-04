@@ -246,6 +246,9 @@ hr{border:none; border-top:1px solid var(--border); margin:1.2em 0;}
   background:var(--bg); color:var(--text);
 }
 .field textarea{min-height:80px; resize:vertical;}
+.cover-preview-wrap{margin-top:8px;}
+.cover-preview-img{width:72px; height:96px; object-fit:cover; border-radius:8px; box-shadow:var(--shadow-sm); display:block;}
+.cover-preview-error{color:var(--danger); font-size:.8rem; margin:0;}
 .field-row{display:flex; gap:10px;}
 .field-row .field{flex:1;}
 .chip-check{display:inline-flex; position:relative;}
@@ -381,7 +384,7 @@ hr{border:none; border-top:1px solid var(--border); margin:1.2em 0;}
 'use strict';
 
 /* ---------- Costanti ---------- */
-var APP_BUILD = 'build 8 · 2026-10-04';
+var APP_BUILD = 'build 9 · 2026-10-04';
 var STORAGE_KEY = 'dicetidice_db_v1';
 var TOKEN_KEY = 'dicetidice_gh_token';
 var GIST_ID_KEY = 'dicetidice_gist_id';
@@ -578,10 +581,24 @@ function openGameModal(mode, gameId, promoteFromWishlistId, prefill){
     + '<div class="field"><label>Giocatori max. (opzionale)</label><input type="number" min="1" name="maxPlayers" value="' + escapeHtml(maxP) + '"></div>'
     + '<div class="field"><label>Durata (min, opzionale)</label><input type="number" min="1" name="playTime" value="' + escapeHtml(playT) + '"></div>'
     + '</div>'
-    + '<div class="field"><label>URL copertina (opzionale)</label><input type="text" name="image" value="' + escapeHtml(image) + '" placeholder="Incolla il link di un\'immagine (es. da BGG)"></div>'
+    + '<div class="field">'
+    + '<label>URL copertina (opzionale)</label>'
+    + '<input type="text" name="image" value="' + escapeHtml(image) + '" placeholder="https://cf.geekdo-images.com/.../pic123.jpg" data-search="cover-preview">'
+    + '<p class="muted" style="margin:6px 0 0;font-size:.8rem;">Deve essere il link diretto al file immagine (finisce in .jpg/.png), non una pagina BGG. Su BGG: apri l\'immagine a schermo intero → tasto destro sulla foto → "Copia indirizzo immagine".</p>'
+    + '<div id="cover-preview-box">' + coverPreviewHtml(image) + '</div>'
+    + '</div>'
     + '<div class="modal-actions"><button type="button" class="btn-secondary" data-action="modal-close">Annulla</button><button type="submit" class="btn-primary">Salva gioco</button></div>'
     + '</form>';
   openModal(html);
+}
+
+function coverPreviewHtml(url){
+  if(!url) return '';
+  return '<div class="cover-preview-wrap"><img src="' + escapeHtml(url) + '" alt="" class="cover-preview-img" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'block\';"><p class="cover-preview-error" style="display:none;">⚠️ Il link non sembra un\'immagine diretta. Controlla che punti proprio al file (.jpg/.png) e non a una pagina web.</p></div>';
+}
+function updateCoverPreview(url){
+  var el = document.getElementById('cover-preview-box');
+  if(el) el.innerHTML = coverPreviewHtml(url.trim());
 }
 
 function handleGameFormSubmit(form){
@@ -1448,6 +1465,7 @@ document.addEventListener('input', function(e){
   if(el.matches('input[data-search="ideas"]')){ UI.ideaSearch = el.value; updateIdeaLists(); return; }
   if(el.matches('input[data-search="randomizer"]')){ UI.rand.playerCount = el.value; UI.rand.resultId = null; updateRandStage(); return; }
   if(el.matches('input[data-search="bgg-reference"]')){ updateBggSearchResults(el.value); return; }
+  if(el.matches('input[data-search="cover-preview"]')){ updateCoverPreview(el.value); return; }
 });
 
 window.addEventListener('hashchange', render);
