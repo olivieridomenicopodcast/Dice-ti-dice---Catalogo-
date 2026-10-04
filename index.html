@@ -285,6 +285,8 @@ hr{border:none; border-top:1px solid var(--border); margin:1.2em 0;}
 .toast{background:var(--text); color:var(--bg); padding:10px 18px; border-radius:24px; font-size:.88rem; font-weight:600; box-shadow:var(--shadow); opacity:0; animation:toastIn .25s ease forwards, toastOut .25s ease 2.6s forwards;}
 @keyframes toastIn{from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);}}
 @keyframes toastOut{to{opacity:0; transform:translateY(-6px);}}
+.toast-update{animation:toastIn .25s ease forwards; display:flex; align-items:center; gap:10px;}
+.toast-update button{background:rgba(255,255,255,0.25); border:none; color:inherit; padding:5px 12px; border-radius:14px; font-weight:700; cursor:pointer; font-size:.85rem;}
 
 /* Game detail */
 .detail-head{display:flex; align-items:flex-start; justify-content:space-between; gap:10px; flex-wrap:wrap;}
@@ -399,7 +401,7 @@ hr{border:none; border-top:1px solid var(--border); margin:1.2em 0;}
 'use strict';
 
 /* ---------- Costanti ---------- */
-var APP_BUILD = 'build 11 · 2026-10-04';
+var APP_BUILD = 'build 12 · 2026-10-04';
 var STORAGE_KEY = 'dicetidice_db_v1';
 var TOKEN_KEY = 'dicetidice_gh_token';
 var GIST_ID_KEY = 'dicetidice_gist_id';
@@ -1458,6 +1460,7 @@ document.addEventListener('click', function(e){
     case 'gist-push': gistPush(); break;
     case 'gist-pull': gistPull(); break;
     case 'export-json': exportJson(); break;
+    case 'reload-app': location.reload(); break;
     case 'cleanup-unplayed-bgg': cleanupUnplayedBggGames(); break;
   }
 });
@@ -1532,9 +1535,27 @@ if(getToken() && localStorage.getItem(GIST_ID_KEY)) setSyncStatus('idle', 'Colle
 if(!location.hash) location.hash = '#/list';
 render();
 
+function showUpdateToast(){
+  if(document.querySelector('.toast-update')) return;
+  var root = document.getElementById('toast-root');
+  var el = document.createElement('div');
+  el.className = 'toast toast-update';
+  el.innerHTML = '<span>🔄 Nuova versione disponibile</span><button type="button" data-action="reload-app">Aggiorna</button>';
+  root.appendChild(el);
+}
 if('serviceWorker' in navigator){
   window.addEventListener('load', function(){
-    navigator.serviceWorker.register('./sw.js').catch(function(){});
+    navigator.serviceWorker.register('./sw.js').then(function(reg){
+      reg.addEventListener('updatefound', function(){
+        var newSW = reg.installing;
+        if(!newSW) return;
+        newSW.addEventListener('statechange', function(){
+          if(newSW.state === 'installed' && navigator.serviceWorker.controller){
+            showUpdateToast();
+          }
+        });
+      });
+    }).catch(function(){});
   });
 }
 
