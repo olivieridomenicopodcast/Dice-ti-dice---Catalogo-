@@ -166,6 +166,11 @@ hr{border:none; border-top:1px solid var(--border); margin:1.2em 0;}
 
 /* Common components */
 .page-head{display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; margin-bottom:16px;}
+.count-pill{
+  display:inline-flex; align-items:center; justify-content:center; min-width:28px; height:24px; padding:0 8px;
+  background:var(--primary); color:var(--primary-contrast); font-family:var(--font-mono); font-size:.85rem; font-weight:700;
+  border-radius:12px; vertical-align:middle; margin-left:4px;
+}
 .btn-primary{
   background:var(--primary); color:var(--primary-contrast); border:none; border-radius:var(--radius-sm);
   padding:10px 18px; font-weight:700; font-size:.95rem; box-shadow:var(--shadow-sm);
@@ -194,6 +199,16 @@ hr{border:none; border-top:1px solid var(--border); margin:1.2em 0;}
 .filters-block{margin-bottom:16px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:14px;}
 .filters-block h4{font-size:.85rem; text-transform:uppercase; letter-spacing:.4px; color:var(--text-muted); margin-bottom:8px;}
 .filters-block + .filters-block{margin-top:10px;}
+.filters-block summary{
+  font-size:.85rem; text-transform:uppercase; letter-spacing:.4px; color:var(--text-muted); font-weight:700;
+  cursor:pointer; list-style:none; display:flex; align-items:center; justify-content:space-between;
+}
+.filters-block summary::-webkit-details-marker{display:none;}
+.filters-block summary::after{content:'▾'; font-size:.9rem; transition:transform .15s ease;}
+.filters-block[open] summary::after{transform:rotate(180deg);}
+.filters-block summary .filter-count{color:var(--primary-dark); margin-left:4px;}
+:root[data-theme="dark"] .filters-block summary .filter-count{color:var(--primary);}
+.filters-block .chip-row{margin-top:10px;}
 
 .game-card{
   display:flex; align-items:center; gap:12px; background:var(--surface); border:1px solid var(--border);
@@ -384,7 +399,7 @@ hr{border:none; border-top:1px solid var(--border); margin:1.2em 0;}
 'use strict';
 
 /* ---------- Costanti ---------- */
-var APP_BUILD = 'build 9 · 2026-10-04';
+var APP_BUILD = 'build 10 · 2026-10-04';
 var STORAGE_KEY = 'dicetidice_db_v1';
 var TOKEN_KEY = 'dicetidice_gh_token';
 var GIST_ID_KEY = 'dicetidice_gist_id';
@@ -506,6 +521,14 @@ var DB = loadDB();
 
 function findGame(id){ return DB.games.find(function(g){ return g.id === id; }); }
 function findPlayer(id){ return DB.players.find(function(p){ return p.id === id; }); }
+function addPlayerProfile(){
+  var name = prompt('Nome del nuovo profilo giocatore:');
+  if(!name || !name.trim()) return null;
+  var p = { id: uid('player'), name: name.trim() };
+  DB.players.push(p);
+  saveDB();
+  return p;
+}
 function findProject(id){ return DB.designer.projects.find(function(p){ return p.id === id; }); }
 
 /* ---------- Stato UI effimero (non persistito) ---------- */
@@ -582,9 +605,10 @@ function openGameModal(mode, gameId, promoteFromWishlistId, prefill){
     + '<div class="field"><label>Durata (min, opzionale)</label><input type="number" min="1" name="playTime" value="' + escapeHtml(playT) + '"></div>'
     + '</div>'
     + '<div class="field">'
-    + '<label>URL copertina (opzionale)</label>'
+    + '<label>Copertina (opzionale)</label>'
     + '<input type="text" name="image" value="' + escapeHtml(image) + '" placeholder="https://cf.geekdo-images.com/.../pic123.jpg" data-search="cover-preview">'
-    + '<p class="muted" style="margin:6px 0 0;font-size:.8rem;">Deve essere il link diretto al file immagine (finisce in .jpg/.png), non una pagina BGG. Su BGG: apri l\'immagine a schermo intero → tasto destro sulla foto → "Copia indirizzo immagine".</p>'
+    + '<p class="muted" style="margin:6px 0 0;font-size:.8rem;">Incolla un link diretto al file immagine (finisce in .jpg/.png, non una pagina BGG — apri l\'immagine a schermo intero → tasto destro → "Copia indirizzo immagine"), oppure carica una foto dal dispositivo:</p>'
+    + '<input type="file" accept="image/*" data-action-change="upload-cover" style="margin-top:8px;max-width:100%;">'
     + '<div id="cover-preview-box">' + coverPreviewHtml(image) + '</div>'
     + '</div>'
     + '<div class="modal-actions"><button type="button" class="btn-secondary" data-action="modal-close">Annulla</button><button type="submit" class="btn-primary">Salva gioco</button></div>'
@@ -599,6 +623,29 @@ function coverPreviewHtml(url){
 function updateCoverPreview(url){
   var el = document.getElementById('cover-preview-box');
   if(el) el.innerHTML = coverPreviewHtml(url.trim());
+}
+function handleCoverFileUpload(file){
+  var reader = new FileReader();
+  reader.onload = function(){
+    var img = new Image();
+    img.onload = function(){
+      var maxDim = 480;
+      var scale = Math.min(1, maxDim / Math.max(img.width, img.height));
+      var w = Math.max(1, Math.round(img.width * scale));
+      var h = Math.max(1, Math.round(img.height * scale));
+      var canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      var dataUrl = canvas.toDataURL('image/jpeg', 0.82);
+      var imgInput = document.querySelector('input[name="image"]');
+      if(imgInput) imgInput.value = dataUrl;
+      updateCoverPreview(dataUrl);
+    };
+    img.onerror = function(){ toast('Impossibile leggere questa immagine'); };
+    img.src = reader.result;
+  };
+  reader.onerror = function(){ toast('Impossibile leggere il file'); };
+  reader.readAsDataURL(file);
 }
 
 function handleGameFormSubmit(form){
@@ -706,10 +753,10 @@ function renderListPage(){
   }).join('');
   var hasFilters = UI.mechFilters.size || UI.typeFilters.size || UI.listSearch;
   return ''
-    + '<div class="page-head"><h2>📚 Lista giochi</h2><button class="btn-primary" data-action="open-add-game">+ Nuovo gioco</button></div>'
+    + '<div class="page-head"><h2>📚 Lista giochi <span class="count-pill">' + DB.games.length + '</span></h2><button class="btn-primary" data-action="open-add-game">+ Nuovo gioco</button></div>'
     + '<div class="search-wrap"><input type="text" class="search-input" placeholder="Cerca per nome…" value="' + escapeHtml(UI.listSearch) + '" data-search="games"></div>'
-    + '<div class="filters-block"><h4>Tipologia</h4><div class="chip-row">' + typeChips + '</div></div>'
-    + '<div class="filters-block"><h4>Meccaniche</h4><div class="chip-row">' + mechChips + '</div></div>'
+    + '<details class="filters-block"' + (UI.typeFilters.size ? ' open' : '') + '><summary>Tipologia' + (UI.typeFilters.size ? '<span class="filter-count">(' + UI.typeFilters.size + ')</span>' : '') + '</summary><div class="chip-row">' + typeChips + '</div></details>'
+    + '<details class="filters-block"' + (UI.mechFilters.size ? ' open' : '') + '><summary>Meccaniche' + (UI.mechFilters.size ? '<span class="filter-count">(' + UI.mechFilters.size + ')</span>' : '') + '</summary><div class="chip-row">' + mechChips + '</div></details>'
     + (hasFilters ? '<div style="margin-bottom:12px;"><button class="btn-link" data-action="clear-filters">✕ Cancella filtri e ricerca</button></div>' : '')
     + '<div id="game-list-results">' + gameListResultsHtml() + '</div>';
 }
@@ -798,7 +845,7 @@ function renderStatsPage(){
   return ''
     + '<h2>📊 Statistiche</h2>'
     + '<div class="section-card"><h3>Classifica giochi per partite</h3><table class="stat-table"><thead><tr><th>Gioco</th><th class="num">Partite</th></tr></thead><tbody>' + gamesRows + '</tbody></table></div>'
-    + '<div class="section-card"><h3>Vittorie totali per profilo</h3><table class="stat-table"><thead><tr><th>Profilo</th><th class="num">Vittorie</th></tr></thead><tbody>' + winsRows + '</tbody></table></div>'
+    + '<div class="section-card"><div class="page-head" style="margin-bottom:10px;"><h3 style="margin:0;">Vittorie totali per profilo</h3><button class="btn-secondary" data-action="add-player-profile">+ Aggiungi profilo</button></div><table class="stat-table"><thead><tr><th>Profilo</th><th class="num">Vittorie</th></tr></thead><tbody>' + winsRows + '</tbody></table></div>'
     + (playedGames.length ? '<div class="section-card"><h3>Vittorie per gioco</h3><table class="stat-table"><thead><tr>' + perGameHeader + '</tr></thead><tbody>' + perGameRows + '</tbody></table></div>' : '');
 }
 
@@ -1061,8 +1108,8 @@ function renderRandomizerPage(){
     + '<h2>🎰 Randomizer</h2>'
     + '<p class="muted">Pesca a caso un gioco dalla tua collezione (esclusi quelli in vendita).</p>'
     + '<div class="filters-block"><h4>Filtro per numero di giocatori (opzionale)</h4><input type="number" min="1" class="search-input" style="max-width:160px;" placeholder="Es. 4" value="' + escapeHtml(UI.rand.playerCount) + '" data-search="randomizer"></div>'
-    + '<div class="filters-block"><h4>Tipologia</h4><div class="chip-row">' + typeChips + '</div></div>'
-    + '<div class="filters-block"><h4>Meccaniche</h4><div class="chip-row">' + mechChips + '</div></div>'
+    + '<details class="filters-block"' + (UI.rand.types.size ? ' open' : '') + '><summary>Tipologia' + (UI.rand.types.size ? '<span class="filter-count">(' + UI.rand.types.size + ')</span>' : '') + '</summary><div class="chip-row">' + typeChips + '</div></details>'
+    + '<details class="filters-block"' + (UI.rand.mechs.size ? ' open' : '') + '><summary>Meccaniche' + (UI.rand.mechs.size ? '<span class="filter-count">(' + UI.rand.mechs.size + ')</span>' : '') + '</summary><div class="chip-row">' + mechChips + '</div></details>'
     + '<p class="muted" id="rand-count">' + eligibleGames().length + ' giochi idonei</p>'
     + '<div class="rand-stage" id="rand-stage">' + randStageHtml() + '</div>'
     + '<div style="text-align:center;"><button class="btn-primary" data-action="draw-game" style="font-size:1.05rem;padding:14px 30px;">🎲 Pesca un gioco!</button></div>';
@@ -1336,12 +1383,13 @@ document.addEventListener('click', function(e){
       break;
     }
     case 'prompt-add-player': {
-      var name = prompt('Nome del nuovo profilo giocatore:');
-      if(name && name.trim()){
-        DB.players.push({ id: uid('player'), name: name.trim() });
-        saveDB();
-        openWinnerModal(el.dataset.game);
-      }
+      var newP = addPlayerProfile();
+      if(newP) openWinnerModal(el.dataset.game);
+      break;
+    }
+    case 'add-player-profile': {
+      var newP2 = addPlayerProfile();
+      if(newP2){ render(); toast('Profilo "' + newP2.name + '" aggiunto'); }
       break;
     }
 
@@ -1433,6 +1481,10 @@ document.addEventListener('change', function(e){
   }
   if(el.matches('input[data-action-change="import-json"]') && el.files && el.files[0]){
     importJsonFile(el.files[0]);
+    return;
+  }
+  if(el.matches('input[data-action-change="upload-cover"]') && el.files && el.files[0]){
+    handleCoverFileUpload(el.files[0]);
     return;
   }
 });
