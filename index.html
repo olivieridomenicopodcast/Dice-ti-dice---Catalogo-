@@ -12,9 +12,9 @@
 })();
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#7a1e27">
+<meta name="theme-color" content="#ffd400">
 <meta name="description" content="Catalogo, statistiche, wishlist e randomizer per la tua collezione di giochi da tavolo.">
-<title>Dice ti Dice - Catalogo</title>
+<title>DICETIDICE · Catalogo</title>
 <link rel="manifest" href="./manifest.json">
 <link rel="icon" href="./icon-192.png" sizes="192x192" type="image/png">
 <link rel="apple-touch-icon" href="./icon-192.png">
@@ -23,41 +23,41 @@
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#faf3e7;
+  --bg:#fffbea;
   --surface:#ffffff;
-  --surface-alt:#f1e6d3;
-  --border:#e4d4b8;
-  --text:#2b2118;
-  --text-muted:#7a6d5c;
-  --primary:#7a1e27;
-  --primary-dark:#5c161d;
-  --primary-contrast:#fff8ee;
-  --accent:#c98a1f;
+  --surface-alt:#fff3bf;
+  --border:#efdd93;
+  --text:#201c10;
+  --text-muted:#6b6248;
+  --primary:#ffd400;
+  --primary-dark:#e6be00;
+  --primary-contrast:#1a1a1a;
+  --accent:#ff4d4f;
   --secondary:#2f6b4f;
-  --danger:#b3312c;
-  --danger-dark:#8f2621;
+  --danger:#e63946;
+  --danger-dark:#c8102e;
   --radius:16px;
   --radius-sm:10px;
-  --shadow:0 6px 20px rgba(43,33,24,0.12);
-  --shadow-sm:0 2px 8px rgba(43,33,24,0.08);
+  --shadow:0 6px 20px rgba(32,28,16,0.12);
+  --shadow-sm:0 2px 8px rgba(32,28,16,0.08);
   --font-head:'Baloo 2', system-ui, sans-serif;
   --font-body:'Manrope', system-ui, sans-serif;
   --font-mono:'JetBrains Mono', ui-monospace, monospace;
 }
 :root[data-theme="dark"]{
-  --bg:#161009;
-  --surface:#241a10;
-  --surface-alt:#2e2114;
-  --border:#3d2c1a;
-  --text:#f3e9d8;
-  --text-muted:#b6a58a;
-  --primary:#e2626f;
-  --primary-dark:#c94a57;
-  --primary-contrast:#241a10;
-  --accent:#e3ac4d;
+  --bg:#15130a;
+  --surface:#201c10;
+  --surface-alt:#2a2512;
+  --border:#3d3518;
+  --text:#fff8e1;
+  --text-muted:#c9be98;
+  --primary:#ffd400;
+  --primary-dark:#e6be00;
+  --primary-contrast:#141208;
+  --accent:#ff6b6b;
   --secondary:#4fae82;
-  --danger:#e2726a;
-  --danger-dark:#c85c54;
+  --danger:#ff6b6b;
+  --danger-dark:#e05050;
   --shadow:0 6px 24px rgba(0,0,0,0.45);
   --shadow-sm:0 2px 10px rgba(0,0,0,0.35);
 }
@@ -90,13 +90,19 @@ hr{border:none; border-top:1px solid var(--border); margin:1.2em 0;}
   box-shadow:var(--shadow-sm);
 }
 .hamburger{
-  background:rgba(255,255,255,0.15); border:none; color:inherit;
+  background:rgba(0,0,0,0.1); border:none; color:inherit;
   width:42px; height:42px; border-radius:12px; font-size:1.3rem;
   display:flex; align-items:center; justify-content:center;
   flex-shrink:0;
 }
-.topbar h1{font-size:1.15rem; margin:0; color:inherit; letter-spacing:.2px;}
-.topbar .dice{font-size:1.3rem; margin-right:2px;}
+.topbar h1{font-size:1.2rem; margin:0; color:inherit; letter-spacing:.3px; display:flex; align-items:center; gap:8px;}
+.topbar .logo-img{width:30px; height:30px; border-radius:50%; flex-shrink:0;}
+.build-badge{
+  position:fixed; left:10px; bottom:8px; z-index:15;
+  font-family:var(--font-mono); font-size:.68rem; color:var(--text-muted);
+  background:var(--surface); border:1px solid var(--border); padding:2px 7px; border-radius:8px;
+  opacity:.8; pointer-events:none;
+}
 
 /* Layout */
 .layout{display:flex; min-height:calc(100vh - 66px);}
@@ -211,7 +217,7 @@ hr{border:none; border-top:1px solid var(--border); margin:1.2em 0;}
 .game-card-body .name{font-family:var(--font-head); font-weight:700; font-size:1.05rem; display:flex; align-items:center; gap:8px; flex-wrap:wrap;}
 .game-card-body .meta{display:flex; flex-wrap:wrap; gap:6px; margin-top:6px;}
 .game-card-actions{display:flex; gap:6px; flex-shrink:0;}
-.badge-sale{background:var(--accent); color:#241a10; font-size:.7rem; font-weight:800; padding:3px 8px; border-radius:8px;}
+.badge-sale{background:var(--accent); color:#fff; font-size:.7rem; font-weight:800; padding:3px 8px; border-radius:8px;}
 
 .empty-state{text-align:center; padding:40px 16px; color:var(--text-muted);}
 .empty-state .big{font-size:2.4rem; margin-bottom:8px;}
@@ -297,7 +303,7 @@ hr{border:none; border-top:1px solid var(--border); margin:1.2em 0;}
 .item-card .top-row{display:flex; align-items:flex-start; justify-content:space-between; gap:10px;}
 .item-card .name{font-family:var(--font-head); font-weight:700; font-size:1.05rem;}
 .priority-alta{background:var(--danger); color:#fff;}
-.priority-media{background:var(--accent); color:#241a10;}
+.priority-media{background:var(--accent); color:#fff;}
 .priority-bassa{background:var(--surface-alt); color:var(--text-muted);}
 .priority-badge{font-size:.7rem; font-weight:800; padding:3px 9px; border-radius:8px;}
 .item-actions{display:flex; gap:6px; flex-wrap:wrap; margin-top:10px;}
@@ -331,14 +337,14 @@ hr{border:none; border-top:1px solid var(--border); margin:1.2em 0;}
 <body>
 <div class="topbar">
   <button class="hamburger" data-action="toggle-sidebar" aria-label="Menu">☰</button>
-  <h1><span class="dice">🎲</span>Dice ti Dice - Catalogo</h1>
+  <h1><img class="logo-img" src="./icon-192.png" alt=""> DICETIDICE</h1>
 </div>
 
 <div class="layout">
   <div class="sidebar-overlay" data-action="close-sidebar"></div>
   <nav class="sidebar" id="sidebar">
     <div class="sidebar-head">
-      <strong>🎲 Menu</strong>
+      <strong><img class="logo-img" src="./icon-192.png" alt="" style="vertical-align:middle;margin-right:6px;">Menu</strong>
       <button class="close-sidebar" data-action="close-sidebar" aria-label="Chiudi">×</button>
     </div>
     <ul class="nav-list" id="nav-list">
@@ -368,12 +374,14 @@ hr{border:none; border-top:1px solid var(--border); margin:1.2em 0;}
 
 <div id="modal-root"></div>
 <div id="toast-root"></div>
+<div class="build-badge" id="build-badge"></div>
 
 <script>
 (function(){
 'use strict';
 
 /* ---------- Costanti ---------- */
+var APP_BUILD = 'build 8 · 2026-10-04';
 var STORAGE_KEY = 'dicetidice_db_v1';
 var TOKEN_KEY = 'dicetidice_gh_token';
 var GIST_ID_KEY = 'dicetidice_gist_id';
@@ -545,17 +553,23 @@ function radioChips(name, options, selected){
 }
 
 /* ================= GAME FORM MODAL ================= */
-function openGameModal(mode, gameId, promoteFromWishlistId, prefillName){
+function openGameModal(mode, gameId, promoteFromWishlistId, prefill){
+  if(typeof prefill === 'string') prefill = { name: prefill };
+  prefill = prefill || {};
   var g = gameId ? findGame(gameId) : null;
-  var name = g ? g.name : (prefillName || '');
-  var mechs = g ? g.mechanics : [];
-  var type = g ? g.type : '';
-  var minP = g && g.minPlayers != null ? g.minPlayers : '';
-  var maxP = g && g.maxPlayers != null ? g.maxPlayers : '';
-  var playT = g && g.playTime != null ? g.playTime : '';
+  var src = g || prefill;
+  var name = src.name || '';
+  var mechs = src.mechanics || [];
+  var type = src.type || '';
+  var minP = src.minPlayers != null ? src.minPlayers : '';
+  var maxP = src.maxPlayers != null ? src.maxPlayers : '';
+  var playT = src.playTime != null ? src.playTime : '';
+  var image = src.image || '';
+  var bggId = src.bggId || '';
   var html = ''
     + '<h3>' + (mode === 'edit' ? 'Modifica gioco' : 'Nuovo gioco') + '</h3>'
     + '<form data-form="game-form" data-mode="' + mode + '" data-id="' + (gameId || '') + '" data-promote="' + (promoteFromWishlistId || '') + '">'
+    + '<input type="hidden" name="bggId" value="' + escapeHtml(bggId) + '">'
     + '<div class="field"><label>Nome del gioco</label><input type="text" name="name" required value="' + escapeHtml(name) + '" placeholder="Es. Wingspan"></div>'
     + '<div class="field"><label>Tipologia</label><div class="chip-row">' + radioChips('type', TYPES, type) + '</div></div>'
     + '<div class="field"><label>Meccaniche</label><div class="chip-row">' + checkChips('mechanics', MECHANICS, mechs) + '</div></div>'
@@ -564,6 +578,7 @@ function openGameModal(mode, gameId, promoteFromWishlistId, prefillName){
     + '<div class="field"><label>Giocatori max. (opzionale)</label><input type="number" min="1" name="maxPlayers" value="' + escapeHtml(maxP) + '"></div>'
     + '<div class="field"><label>Durata (min, opzionale)</label><input type="number" min="1" name="playTime" value="' + escapeHtml(playT) + '"></div>'
     + '</div>'
+    + '<div class="field"><label>URL copertina (opzionale)</label><input type="text" name="image" value="' + escapeHtml(image) + '" placeholder="Incolla il link di un\'immagine (es. da BGG)"></div>'
     + '<div class="modal-actions"><button type="button" class="btn-secondary" data-action="modal-close">Annulla</button><button type="submit" class="btn-primary">Salva gioco</button></div>'
     + '</form>';
   openModal(html);
@@ -581,19 +596,22 @@ function handleGameFormSubmit(form){
   var minPlayers = fd.get('minPlayers') ? Number(fd.get('minPlayers')) : null;
   var maxPlayers = fd.get('maxPlayers') ? Number(fd.get('maxPlayers')) : null;
   var playTime = fd.get('playTime') ? Number(fd.get('playTime')) : null;
+  var image = (fd.get('image') || '').toString().trim() || null;
+  var bggId = (fd.get('bggId') || '').toString().trim() || null;
 
   if(mode === 'edit'){
     var g = findGame(id);
     if(g){
       g.name = name; g.mechanics = mechanics; g.type = type;
       g.minPlayers = minPlayers; g.maxPlayers = maxPlayers; g.playTime = playTime;
+      g.image = image; if(bggId) g.bggId = bggId;
     }
   } else {
     DB.games.push({
       id: uid('game'), name: name, mechanics: mechanics, type: type,
       minPlayers: minPlayers, maxPlayers: maxPlayers,
-      playTime: playTime, publisher: null, image: null, bggId: null,
-      forSale: false, forSaleNote: '', plays: [], createdAt: Date.now()
+      playTime: playTime, publisher: null, image: image, bggId: bggId,
+      forSale: false, forSaleNote: '', plays: [], createdAt: Date.now(), confirmed: true
     });
     if(promoteFrom){
       DB.wishlist = DB.wishlist.filter(function(w){ return w.id !== promoteFrom; });
@@ -652,7 +670,7 @@ function gameListResultsHtml(){
   if(!list.length){
     var hasFilters = UI.listSearch || UI.mechFilters.size || UI.typeFilters.size;
     return '<div class="empty-state"><div class="big">🎲</div><p>Nessun gioco trovato' + (hasFilters ? ' con questi filtri.' : '. Aggiungi il tuo primo gioco!') + '</p>'
-      + (hasFilters ? '' : '<button type="button" class="btn-secondary" data-action="open-sync-setup">📚 Oppure importa la libreria BGG (426 giochi)</button>')
+      + (hasFilters ? '' : '<button type="button" class="btn-secondary" data-action="open-add-game">🔍 Cerca nel database offline (426 giochi)</button>')
       + '</div>';
   }
   return list.map(gameCardHtml).join('');
@@ -1102,10 +1120,12 @@ function openSyncSetupModal(){
     + '<button type="button" class="btn-secondary" data-action="export-json">⬇️ Esporta backup</button>'
     + '<label class="btn-secondary" style="display:inline-flex;align-items:center;">⬆️ Importa backup<input type="file" accept="application/json" data-action-change="import-json" style="display:none"></label>'
     + '</div>'
-    + '<hr><h4>Libreria BGG</h4>'
-    + '<p class="muted">Importa un elenco precaricato di 426 giochi (nome, copertina, giocatori, durata, meccaniche) preso da BoardGameGeek. I giochi già presenti in catalogo non vengono duplicati.</p>'
+    + '<hr><h4>Database offline BGG</h4>'
+    + '<p class="muted">I 426 giochi presi da BoardGameGeek sono sempre disponibili come riferimento: compaiono automaticamente quando cerchi un gioco da aggiungere in "+ Nuovo gioco", senza entrare nel catalogo finché non lo scegli tu.</p>'
+    + '<hr><h4 style="color:var(--danger);">⚠️ Danger zone</h4>'
+    + '<p class="muted">Rimuove dal catalogo i giochi finiti lì per un vecchio import automatico, mai confermati da te né giocati. I giochi che hai aggiunto tu stesso (anche senza partite registrate) restano sempre intatti.</p>'
     + '<div class="modal-actions" style="justify-content:flex-start;">'
-    + '<button type="button" class="btn-secondary" data-action="import-bgg-library">📚 Importa libreria BGG</button>'
+    + '<button type="button" class="btn-danger" data-action="cleanup-unplayed-bgg">🗑️ Rimuovi giochi BGG mai giocati</button>'
     + '</div>';
   openModal(html);
 }
@@ -1130,31 +1150,63 @@ function importJsonFile(file){
   };
   reader.readAsText(file);
 }
-function importBggLibrary(){
-  if(!confirm('Importare la libreria BGG (426 giochi con copertine)? I giochi già presenti nel catalogo (stesso bggId) non verranno duplicati.')) return;
-  fetch('./data/bgg_games.json').then(function(res){
-    if(!res.ok) throw new Error('File non trovato (' + res.status + ')');
+function cleanupUnplayedBggGames(){
+  var candidates = DB.games.filter(function(g){ return g.bggId && g.plays.length === 0 && !g.confirmed; });
+  if(!candidates.length){ toast('Nessun gioco da ripulire: tutti i giochi presenti sono stati aggiunti volontariamente o hanno partite registrate'); return; }
+  if(!confirm('Rimuovere ' + candidates.length + ' giochi importati automaticamente da BGG (mai confermati né giocati)? I giochi aggiunti da te, anche senza partite, e quelli con partite registrate restano intatti. Azione non annullabile.')) return;
+  var toRemove = {};
+  candidates.forEach(function(g){ toRemove[g.id] = true; });
+  DB.games = DB.games.filter(function(g){ return !toRemove[g.id]; });
+  saveDB(); closeModal(); render();
+  toast(candidates.length + ' giochi rimossi dal catalogo');
+}
+
+/* ================= RICERCA OFFLINE BGG (aggiunta gioco) ================= */
+var BGG_LIBRARY_CACHE = null;
+var BGG_LIBRARY_PROMISE = null;
+function loadBggLibrary(){
+  if(BGG_LIBRARY_CACHE) return Promise.resolve(BGG_LIBRARY_CACHE);
+  if(BGG_LIBRARY_PROMISE) return BGG_LIBRARY_PROMISE;
+  BGG_LIBRARY_PROMISE = fetch('./data/bgg_games.json').then(function(res){
+    if(!res.ok) throw new Error('non disponibile');
     return res.json();
-  }).then(function(list){
-    var existingBggIds = {};
-    DB.games.forEach(function(g){ if(g.bggId) existingBggIds[g.bggId] = true; });
-    var added = 0;
-    list.forEach(function(item){
-      if(existingBggIds[item.bggId]) return;
-      DB.games.push({
-        id: uid('game'), name: item.name, mechanics: item.mechanics || [], type: item.type || '',
-        minPlayers: item.minPlayers != null ? item.minPlayers : null,
-        maxPlayers: item.maxPlayers != null ? item.maxPlayers : null,
-        playTime: item.playTime != null ? item.playTime : null,
-        publisher: item.publisher || null, image: item.image || null, bggId: item.bggId || null,
-        forSale: false, forSaleNote: '', plays: [], createdAt: Date.now()
-      });
-      existingBggIds[item.bggId] = true;
-      added++;
-    });
-    saveDB(); closeModal(); render();
-    toast(added + ' giochi importati dalla libreria BGG' + (added < list.length ? ' (' + (list.length - added) + ' già presenti)' : ''));
-  }).catch(function(err){ toast('Errore import libreria: ' + err.message); });
+  }).then(function(list){ BGG_LIBRARY_CACHE = list; return list; });
+  return BGG_LIBRARY_PROMISE;
+}
+function openAddGameSearchModal(){
+  var html = ''
+    + '<h3>Nuovo gioco</h3>'
+    + '<p class="muted">Cerca nel database offline (426 giochi BGG) per precompilare copertina, meccaniche e giocatori.</p>'
+    + '<div class="field"><input type="text" class="search-input" placeholder="Cerca un gioco…" autocomplete="off" data-search="bgg-reference"></div>'
+    + '<div id="bgg-search-results">' + bggSearchResultsHtml('') + '</div>'
+    + '<div class="modal-actions" style="justify-content:space-between;">'
+    + '<button type="button" class="btn-link" data-action="open-add-game-manual">✏️ Non lo trovo, aggiungilo a mano</button>'
+    + '<button type="button" class="btn-secondary" data-action="modal-close">Annulla</button>'
+    + '</div>';
+  openModal(html);
+  loadBggLibrary().then(function(){ updateBggSearchResults(''); }).catch(function(){
+    var el = document.getElementById('bgg-search-results');
+    if(el) el.innerHTML = '<p class="muted">Database offline non disponibile al momento. Puoi comunque aggiungere il gioco a mano.</p>';
+  });
+}
+function bggSearchResultsHtml(query){
+  if(!BGG_LIBRARY_CACHE) return '<p class="muted">Caricamento database offline…</p>';
+  var q = query.trim().toLowerCase();
+  if(!q) return '<p class="muted">Digita per cercare tra i ' + BGG_LIBRARY_CACHE.length + ' giochi del database offline…</p>';
+  var matches = BGG_LIBRARY_CACHE.filter(function(item){ return item.name.toLowerCase().indexOf(q) !== -1; }).slice(0, 30);
+  if(!matches.length) return '<p class="muted">Nessun risultato per "' + escapeHtml(query) + '". Puoi aggiungerlo a mano.</p>';
+  return matches.map(function(item){
+    var thumb = item.image
+      ? '<img class="cover-thumb" src="' + escapeHtml(item.image) + '" alt="" loading="lazy" onerror="this.outerHTML=\'<span class=&quot;die-badge&quot;>🎲</span>\'">'
+      : '<span class="die-badge">🎲</span>';
+    return '<div class="game-card" style="cursor:pointer;" data-action="pick-bgg-result" data-bggid="' + escapeHtml(item.bggId) + '">' + thumb
+      + '<div class="game-card-body"><div class="name">' + escapeHtml(item.name) + '</div>'
+      + '<div class="meta">' + (item.type ? '<span class="chip type-chip">' + escapeHtml(TYPE_MAP[item.type] || item.type) + '</span>' : '') + '</div></div></div>';
+  }).join('');
+}
+function updateBggSearchResults(query){
+  var el = document.getElementById('bgg-search-results');
+  if(el) el.innerHTML = bggSearchResultsHtml(query);
 }
 
 /* ================= ROUTER ================= */
@@ -1220,7 +1272,13 @@ document.addEventListener('click', function(e){
     case 'theme-toggle': toggleTheme(); break;
     case 'modal-close': closeModal(); break;
 
-    case 'open-add-game': openGameModal('add'); break;
+    case 'open-add-game': openAddGameSearchModal(); break;
+    case 'open-add-game-manual': openGameModal('add'); break;
+    case 'pick-bgg-result': {
+      var picked = (BGG_LIBRARY_CACHE || []).find(function(it){ return it.bggId === el.dataset.bggid; });
+      if(picked) openGameModal('add', null, null, picked);
+      break;
+    }
     case 'open-edit-game': openGameModal('edit', id); break;
     case 'open-delete-game': openDeleteGameModal(id); break;
     case 'confirm-delete-game':
@@ -1334,7 +1392,7 @@ document.addEventListener('click', function(e){
     case 'gist-push': gistPush(); break;
     case 'gist-pull': gistPull(); break;
     case 'export-json': exportJson(); break;
-    case 'import-bgg-library': importBggLibrary(); break;
+    case 'cleanup-unplayed-bgg': cleanupUnplayedBggGames(); break;
   }
 });
 
@@ -1389,6 +1447,7 @@ document.addEventListener('input', function(e){
   if(el.matches('input[data-search="games"]')){ UI.listSearch = el.value; updateGameListResults(); return; }
   if(el.matches('input[data-search="ideas"]')){ UI.ideaSearch = el.value; updateIdeaLists(); return; }
   if(el.matches('input[data-search="randomizer"]')){ UI.rand.playerCount = el.value; UI.rand.resultId = null; updateRandStage(); return; }
+  if(el.matches('input[data-search="bgg-reference"]')){ updateBggSearchResults(el.value); return; }
 });
 
 window.addEventListener('hashchange', render);
@@ -1396,6 +1455,8 @@ window.addEventListener('resize', function(){ if(window.innerWidth >= 960){ side
 
 /* ================= INIT ================= */
 applyThemeButtonLabel();
+var buildBadgeEl = document.getElementById('build-badge');
+if(buildBadgeEl) buildBadgeEl.textContent = APP_BUILD;
 if(getToken() && localStorage.getItem(GIST_ID_KEY)) setSyncStatus('idle', 'Collegato — usa ⬇/⬆ per sincronizzare');
 if(!location.hash) location.hash = '#/list';
 render();

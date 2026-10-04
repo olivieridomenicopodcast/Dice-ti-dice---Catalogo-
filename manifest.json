@@ -1,13 +1,13 @@
 {
-  "name": "Dice ti Dice - Catalogo",
-  "short_name": "Dice ti Dice",
+  "name": "DICETIDICE · Catalogo",
+  "short_name": "DICETIDICE",
   "description": "Catalogo, statistiche, wishlist e randomizer per la tua collezione di giochi da tavolo.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait-primary",
-  "background_color": "#1b1712",
-  "theme_color": "#7a1e27",
+  "background_color": "#ffffff",
+  "theme_color": "#ffd400",
   "lang": "it",
   "icons": [
     {
