@@ -399,7 +399,7 @@ hr{border:none; border-top:1px solid var(--border); margin:1.2em 0;}
 'use strict';
 
 /* ---------- Costanti ---------- */
-var APP_BUILD = 'build 10 · 2026-10-04';
+var APP_BUILD = 'build 11 · 2026-10-04';
 var STORAGE_KEY = 'dicetidice_db_v1';
 var TOKEN_KEY = 'dicetidice_gh_token';
 var GIST_ID_KEY = 'dicetidice_gist_id';
@@ -1146,6 +1146,7 @@ function findOrCreateGist(){
     });
 }
 function gistPush(){
+  if(!confirm('Sovrascrivere i dati salvati nel Gist con quelli di questo dispositivo? I dati remoti attuali andranno persi.')) return;
   setSyncStatus('pending');
   findOrCreateGist().then(function(id){
     var body = { files: {} };
