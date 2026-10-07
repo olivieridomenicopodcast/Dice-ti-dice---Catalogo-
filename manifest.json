@@ -1,7 +1,7 @@
 {
   "name": "DICETIDICE · Catalogo",
   "short_name": "DICETIDICE",
-  "description": "Catalogo, statistiche, wishlist e randomizer per la tua collezione di giochi da tavolo.",
+  "description": "Catalogo giochi da tavolo e piano editoriale per i tuoi contenuti video, in un'unica app.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",

@@ -352,6 +352,50 @@ hr{border:none; border-top:1px solid var(--border); margin:1.2em 0;}
 
 ::-webkit-scrollbar{width:10px; height:10px;}
 ::-webkit-scrollbar-thumb{background:var(--border); border-radius:6px;}
+
+/* ---- Piano Editoriale ---- */
+.ed-item{display:flex; align-items:stretch; gap:10px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:12px; margin-bottom:10px; box-shadow:var(--shadow-sm);}
+.ed-item .ed-bar{width:4px; border-radius:3px; flex:none;}
+.ed-item .ed-main{flex:1; min-width:0; cursor:pointer; text-decoration:none; color:inherit;}
+.ed-title-row{display:flex; align-items:center; gap:8px; flex-wrap:wrap;}
+.ed-title-row .ed-title{font-family:var(--font-head); font-weight:700; font-size:1rem;}
+.ed-idea{margin-top:4px; font-size:.85rem; color:var(--text-muted); display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;}
+.ed-foot{margin-top:6px; display:flex; gap:8px; flex-wrap:wrap; font-family:var(--font-mono); font-size:.72rem; color:var(--text-muted);}
+.ed-arrows{display:flex; flex-direction:column; gap:3px; justify-content:center; flex:none;}
+.ed-arrows button{width:26px; height:20px; border:1px solid var(--border); border-radius:5px; background:var(--surface-alt); color:var(--text-muted); font-size:.65rem; display:flex; align-items:center; justify-content:center;}
+.ed-arrows button:disabled{opacity:.3;}
+.ed-ph{border:1px dashed var(--primary); border-radius:var(--radius); background:var(--surface-alt); margin-bottom:10px; height:0; overflow:hidden;}
+.ed-clone{position:fixed; z-index:200; box-shadow:var(--shadow); opacity:.95; pointer-events:none; margin:0 !important;}
+
+.ed-tlruler{display:flex; justify-content:space-between; font-family:var(--font-mono); font-size:.72rem; color:var(--text-muted); margin:0 2px 6px;}
+.ed-tlstrip{display:flex; gap:4px; overflow-x:auto; padding:2px 2px 10px; -webkit-overflow-scrolling:touch;}
+.ed-tlseg{flex:none; min-width:46px; border-radius:8px; padding:6px 8px; font-family:var(--font-mono); font-size:.68rem; color:#fff; display:flex; flex-direction:column; justify-content:space-between; cursor:pointer;}
+.ed-tladd{flex:none; min-width:40px; border:1px dashed var(--border); border-radius:8px; color:var(--text-muted); display:flex; align-items:center; justify-content:center; font-size:1.1rem; background:var(--surface);}
+
+.ed-bitem{display:flex; align-items:center; gap:8px; padding:9px; margin-bottom:8px; border:1px solid var(--border); border-radius:var(--radius-sm); background:var(--surface-alt);}
+.ed-bitem .ed-grip{font-family:var(--font-mono); font-size:1.1rem; color:var(--text-muted); cursor:grab; padding:4px 2px; flex:none; letter-spacing:-2px; touch-action:none;}
+.ed-bitem .ed-bbar{width:4px; align-self:stretch; border-radius:3px; flex:none;}
+.ed-bitem .ed-bbody{flex:1; min-width:0; cursor:pointer;}
+.ed-btitle{font-weight:700; font-size:.9rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+.ed-bdesc{font-size:.78rem; color:var(--text-muted); margin-top:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+.ed-bmeta{font-family:var(--font-mono); font-size:.7rem; color:var(--text-muted); margin-top:3px; display:flex; gap:8px;}
+.ed-bacts{display:flex; gap:4px; flex:none;}
+.ed-bacts button{width:28px; height:28px; border:1px solid var(--border); border-radius:7px; background:var(--surface); color:var(--text-muted); font-size:.82rem;}
+
+.ed-tgroup{margin-bottom:12px;}
+.ed-tgrouplabel{font-family:var(--font-mono); font-size:.72rem; letter-spacing:.05em; text-transform:uppercase; font-weight:700; margin-bottom:6px;}
+.ed-tgrid{display:flex; flex-wrap:wrap; gap:6px;}
+.ed-tchip{font-size:.78rem; padding:6px 10px; border-radius:8px; border:1.5px solid var(--border); background:var(--surface-alt); color:var(--text-muted); display:inline-flex; align-items:center; gap:5px;}
+.ed-tchip.sel{color:#fff; font-weight:700;}
+
+.ed-typerow{display:flex; align-items:center; gap:9px; padding:9px 2px; border-bottom:1px solid var(--border);}
+.ed-typerow:last-child{border-bottom:none;}
+.ed-typeicon{width:28px; height:28px; border-radius:7px; display:flex; align-items:center; justify-content:center; font-size:.95rem; flex:none;}
+.ed-typename{flex:1; min-width:0; font-size:.88rem;}
+.ed-typebase{font-family:var(--font-mono); font-size:.68rem; color:var(--text-muted); text-transform:uppercase;}
+.ed-dur-stepper{display:flex; gap:6px; align-items:center;}
+.ed-dur-stepper button{width:36px; height:36px; border:1px solid var(--border); border-radius:var(--radius-sm); background:var(--surface-alt); font-size:1.1rem; font-weight:700; color:var(--text);}
+.ed-dur-stepper input{text-align:center;}
 </style>
 </head>
 <body>
@@ -374,6 +418,7 @@ hr{border:none; border-top:1px solid var(--border); margin:1.2em 0;}
       <li><a href="#/sell" data-page="sell"><span class="ic">🏷️</span>Da rivendere</a></li>
       <li><a href="#/designer" data-page="designer"><span class="ic">✏️</span>Game Designer</a></li>
       <li><a href="#/randomizer" data-page="randomizer"><span class="ic">🎰</span>Randomizer</a></li>
+      <li><a href="#/editorial" data-page="editorial"><span class="ic">📋</span>Piano Editoriale</a></li>
     </ul>
     <div class="theme-toggle-row">
       <span>Tema</span>
@@ -401,7 +446,7 @@ hr{border:none; border-top:1px solid var(--border); margin:1.2em 0;}
 'use strict';
 
 /* ---------- Costanti ---------- */
-var APP_BUILD = 'build 12 · 2026-10-04';
+var APP_BUILD = 'build 13 · 2026-10-07';
 var STORAGE_KEY = 'dicetidice_db_v1';
 var TOKEN_KEY = 'dicetidice_gh_token';
 var GIST_ID_KEY = 'dicetidice_gist_id';
@@ -468,6 +513,53 @@ var DESIGN_PHASES = [
 ];
 var PHASE_MAP = {}; DESIGN_PHASES.forEach(function(p){ PHASE_MAP[p[0]] = p[1]; });
 
+var ED_GROUPS = {
+  video:  { label: 'Video / Visuale',      color: '#2f8f9d' },
+  audio:  { label: 'Audio / Voce',         color: '#d99a00' },
+  testo:  { label: 'Testo',                color: '#b15fd1' },
+  azione: { label: 'Contenuto / Azione',   color: '#2f6b4f' },
+  trans:  { label: 'Transizioni',          color: '#6b7cf0' }
+};
+var ED_BUILTIN_TYPES = [
+  {id:'v_se',g:'video',name:'Ripresa a sé stessi',icon:'🎤'},
+  {id:'v_vivo',g:'video',name:'Ripresa dal vivo (persona/luogo/oggetto)',icon:'🎬'},
+  {id:'v_broll',g:'video',name:'B-roll',icon:'🌀'},
+  {id:'v_arch',g:'video',name:"Materiale d'archivio/trovato",icon:'🗄️'},
+  {id:'v_screc',g:'video',name:'Screen recording',icon:'🖥️'},
+  {id:'v_shot',g:'video',name:'Screenshot',icon:'📱'},
+  {id:'v_img',g:'video',name:'Immagine',icon:'🖼️'},
+  {id:'v_graf',g:'video',name:'Grafica',icon:'🎨'},
+  {id:'v_meme',g:'video',name:'Meme',icon:'😂'},
+  {id:'a_cam',g:'audio',name:'Parlato in camera',icon:'🗣️'},
+  {id:'a_vo',g:'audio',name:'Voice-over',icon:'🎙️'},
+  {id:'a_orig',g:'audio',name:'Audio originale',icon:'🔊'},
+  {id:'a_reg',g:'audio',name:'Registrazione reale',icon:'📻'},
+  {id:'a_mus',g:'audio',name:'Musica',icon:'🎵'},
+  {id:'a_sfx',g:'audio',name:'Sound effect',icon:'💥'},
+  {id:'a_sil',g:'audio',name:'Silenzio',icon:'🔇'},
+  {id:'t_screen',g:'testo',name:'Testo a schermo',icon:'🔤'},
+  {id:'t_sub',g:'testo',name:'Sottotitoli',icon:'💬'},
+  {id:'t_comm',g:'testo',name:'Commento',icon:'📝'},
+  {id:'t_tit',g:'testo',name:'Titolo',icon:'🏷️'},
+  {id:'t_dato',g:'testo',name:'Dato/informazione',icon:'📊'},
+  {id:'z_hook',g:'azione',name:'Hook',icon:'🪝'},
+  {id:'z_spieg',g:'azione',name:'Spiegazione',icon:'💡'},
+  {id:'z_esem',g:'azione',name:'Esempio',icon:'📌'},
+  {id:'z_dimo',g:'azione',name:'Dimostrazione',icon:'🔧'},
+  {id:'z_dom',g:'azione',name:'Domanda',icon:'❓'},
+  {id:'z_risp',g:'azione',name:'Risposta',icon:'✅'},
+  {id:'z_reaz',g:'azione',name:'Reazione',icon:'😮'},
+  {id:'z_twist',g:'azione',name:'Rivelazione/Twist',icon:'🎭'},
+  {id:'z_punch',g:'azione',name:'Punchline',icon:'🎯'},
+  {id:'z_cta',g:'azione',name:'CTA',icon:'📣'},
+  {id:'x_stacco',g:'trans',name:'Stacco/Cambio scena',icon:'✂️'},
+  {id:'x_trans',g:'trans',name:'Transizione',icon:'🔀'},
+  {id:'x_pausa',g:'trans',name:'Pausa',icon:'⏸️'}
+];
+var ED_STATUSES = [
+  ['idea','Idea'], ['scheletro','Scheletro'], ['script','Script'], ['materiali','Materiali'], ['pubblicato','Pubblicato']
+];
+
 /* ---------- Utility ---------- */
 function uid(prefix){ return (prefix ? prefix + '_' : '') + Date.now().toString(36) + Math.random().toString(36).slice(2,8); }
 function escapeHtml(str){
@@ -490,7 +582,8 @@ function defaultDB(){
     games: [],
     wishlist: [],
     players: [ {id:'niky', name:'Niky'}, {id:'erika', name:'Erika'} ],
-    designer: { projects: [], ideas: [] }
+    designer: { projects: [], ideas: [] },
+    editorial: { contents: [], customTypes: [], platforms: ['TikTok','Instagram Reels','YouTube Shorts','Podcast'] }
   };
 }
 function normalizeDB(raw){
@@ -502,11 +595,20 @@ function normalizeDB(raw){
     d.designer = raw.designer && typeof raw.designer === 'object' ? raw.designer : d.designer;
     if(!Array.isArray(d.designer.projects)) d.designer.projects = [];
     if(!Array.isArray(d.designer.ideas)) d.designer.ideas = [];
+    d.editorial = raw.editorial && typeof raw.editorial === 'object' ? raw.editorial : d.editorial;
+    if(!Array.isArray(d.editorial.contents)) d.editorial.contents = [];
+    if(!Array.isArray(d.editorial.customTypes)) d.editorial.customTypes = [];
+    if(!Array.isArray(d.editorial.platforms) || !d.editorial.platforms.length) d.editorial.platforms = ['TikTok','Instagram Reels','YouTube Shorts','Podcast'];
   }
   d.games.forEach(function(g){
     if(!Array.isArray(g.plays)) g.plays = [];
     if(!Array.isArray(g.mechanics)) g.mechanics = [];
     if(typeof g.forSale !== 'boolean') g.forSale = false;
+  });
+  d.editorial.contents.forEach(function(c){
+    if(!Array.isArray(c.timeline)) c.timeline = [];
+    if(!Array.isArray(c.platforms)) c.platforms = [];
+    c.timeline.forEach(function(b){ if(!Array.isArray(b.typeIds)) b.typeIds = []; });
   });
   return d;
 }
@@ -532,6 +634,12 @@ function addPlayerProfile(){
   return p;
 }
 function findProject(id){ return DB.designer.projects.find(function(p){ return p.id === id; }); }
+function edAllTypes(){ return ED_BUILTIN_TYPES.concat(DB.editorial.customTypes); }
+function edTypeById(id){ return edAllTypes().find(function(t){ return t.id === id; }); }
+function edGroupColor(g){ return (ED_GROUPS[g] || {}).color || '#8a8a8a'; }
+function edFindContent(id){ return DB.editorial.contents.find(function(c){ return c.id === id; }); }
+function edSortedContents(){ return DB.editorial.contents.slice().sort(function(a,b){ return (a.order||0) - (b.order||0); }); }
+function edStatusLabel(k){ var s = ED_STATUSES.find(function(x){ return x[0] === k; }); return s ? s[1] : k; }
 
 /* ---------- Stato UI effimero (non persistito) ---------- */
 var UI = {
@@ -541,7 +649,11 @@ var UI = {
   ideaSearch: '',
   designerTab: 'progetti',
   sellTab: 'vendita',
-  rand: { types: new Set(), mechs: new Set(), playerCount: '', spinning: false, resultId: null }
+  rand: { types: new Set(), mechs: new Set(), playerCount: '', spinning: false, resultId: null },
+  edTab: 'piano',
+  edSearch: '',
+  edStatusFilter: '',
+  edContentSub: 'info'
 };
 
 /* ---------- Toast ---------- */
@@ -1033,6 +1145,422 @@ function renderDesignerPage(){
         + '<h3 style="margin-top:20px;">Idee generali</h3><div id="idea-general-list">' + ideaLists.generalBlock + '</div>');
 }
 
+/* ================= PIANO EDITORIALE ================= */
+var EDBLOCKSEL = new Set();
+var EDCDRAG = null;
+var EDBDRAG = null;
+var edSuppressClick = false;
+
+function edReorderable(){ return !UI.edSearch.trim() && !UI.edStatusFilter; }
+function edFilteredContents(){
+  var q = UI.edSearch.trim().toLowerCase();
+  return edSortedContents().filter(function(c){
+    if(UI.edStatusFilter && c.status !== UI.edStatusFilter) return false;
+    if(q && (c.title||'').toLowerCase().indexOf(q) === -1 && (c.idea||'').toLowerCase().indexOf(q) === -1) return false;
+    return true;
+  });
+}
+function edContentCardHtml(c, idx, total, reorderable){
+  var dur = c.timeline.reduce(function(a,b){ return a + (Number(b.duration)||0); }, 0);
+  var col = c.status === 'pubblicato' ? 'var(--secondary)' : (c.status === 'scheletro' ? 'var(--primary-dark)' : 'var(--border)');
+  var meta = [c.timeline.length + ' blocchi'];
+  if(dur) meta.push(dur + 's stimati');
+  if(c.dateExpected) meta.push(formatDate(c.dateExpected));
+  if(c.platforms.length) meta.push(c.platforms.join(', '));
+  return '<div class="ed-item" data-ed-drag="' + (reorderable ? c.id : '') + '">'
+    + '<div class="ed-bar" style="background:' + col + '"></div>'
+    + '<a href="#/editorial/' + c.id + '" class="ed-main">'
+    + '<div class="ed-title-row"><span class="ed-title">' + escapeHtml(c.title || '(senza titolo)') + '</span><span class="chip">' + escapeHtml(edStatusLabel(c.status)) + '</span></div>'
+    + (c.idea ? '<div class="ed-idea">' + escapeHtml(c.idea) + '</div>' : '')
+    + '<div class="ed-foot">' + meta.map(function(m){ return '<span>' + escapeHtml(m) + '</span>'; }).join('') + '</div>'
+    + '</a>'
+    + (reorderable ? (
+        '<div class="ed-arrows">'
+        + '<button type="button" data-action="ed-move-up" data-id="' + c.id + '"' + (idx === 0 ? ' disabled' : '') + '>▲</button>'
+        + '<button type="button" data-action="ed-move-down" data-id="' + c.id + '"' + (idx === total - 1 ? ' disabled' : '') + '>▼</button>'
+        + '</div>'
+      ) : '')
+    + '</div>';
+}
+function edContentListHtml(){
+  var reorderable = edReorderable();
+  var items = edFilteredContents();
+  if(!items.length){
+    return '<div class="empty-state"><div class="big">📋</div><p>' + (reorderable ? 'Nessun contenuto ancora. Tocca "+ Nuovo contenuto" per iniziare.' : 'Nessun risultato con questi filtri.') + '</p></div>';
+  }
+  return items.map(function(c, i){ return edContentCardHtml(c, i, items.length, reorderable); }).join('');
+}
+function updateEdContentList(){
+  var el = document.getElementById('ed-content-list');
+  if(el) el.innerHTML = edContentListHtml();
+}
+function edPlanTabHtml(){
+  return ''
+    + '<div class="field-row" style="margin-bottom:14px;">'
+    + '<input type="text" class="search-input" style="flex:2;" placeholder="Cerca titolo o idea…" value="' + escapeHtml(UI.edSearch) + '" data-search="editorial">'
+    + '<select class="search-input" style="flex:1;" data-action-change="ed-status-filter">'
+    + '<option value="">Stato · tutti</option>' + ED_STATUSES.map(function(s){ return '<option value="' + s[0] + '"' + (UI.edStatusFilter === s[0] ? ' selected' : '') + '>' + s[1] + '</option>'; }).join('')
+    + '</select>'
+    + '</div>'
+    + '<div id="ed-content-list">' + edContentListHtml() + '</div>'
+    + '<button class="btn-primary" style="width:100%;margin-top:10px;" data-action="add-ed-content">+ Nuovo contenuto</button>';
+}
+
+function edTypesTabHtml(){
+  var groups = Object.keys(ED_GROUPS).map(function(g){
+    var items = edAllTypes().filter(function(t){ return t.g === g; });
+    var rows = items.map(function(t){
+      var custom = !ED_BUILTIN_TYPES.some(function(bt){ return bt.id === t.id; });
+      return '<div class="ed-typerow">'
+        + '<div class="ed-typeicon" style="background:' + ED_GROUPS[g].color + '22;color:' + ED_GROUPS[g].color + ';">' + t.icon + '</div>'
+        + '<div class="ed-typename">' + escapeHtml(t.name) + (custom ? '' : ' <span class="ed-typebase">(base)</span>') + '</div>'
+        + (custom ? '<button class="btn-icon" data-action="ed-edit-type" data-id="' + t.id + '" title="Modifica">✏️</button>' : '')
+        + '</div>';
+    }).join('');
+    return '<div class="section-card"><h3 style="color:' + ED_GROUPS[g].color + ';">' + ED_GROUPS[g].label + '</h3>' + rows + '</div>';
+  }).join('');
+  return ''
+    + '<p class="muted">I tipi sono gli elementi che puoi mettere sulla timeline (video, audio, testo, azione, transizione). Quelli di base sono già pronti; puoi aggiungerne di tuoi quando vuoi, anche al volo mentre costruisci un blocco.</p>'
+    + '<button class="btn-primary" style="width:100%;margin-bottom:14px;" data-action="ed-add-type">+ Nuovo tipo personalizzato</button>'
+    + groups;
+}
+
+function edDataTabHtml(){
+  var platChips = DB.editorial.platforms.map(function(p){
+    return '<span class="chip">' + escapeHtml(p) + '<button type="button" data-action="ed-remove-platform" data-platform="' + escapeHtml(p) + '" style="margin-left:4px;background:none;border:none;color:inherit;cursor:pointer;">✕</button></span>';
+  }).join('') || '<p class="muted">Nessuna piattaforma ancora.</p>';
+  var count = DB.editorial.contents.length;
+  return ''
+    + '<div class="section-card"><h3>Piattaforme</h3><p class="muted">Le piattaforme su cui pubblichi. Personalizzale come vuoi.</p>'
+    + '<div class="chip-row">' + platChips + '</div>'
+    + '<form data-form="ed-plat-form" class="field-row" style="margin-top:10px;"><input type="text" class="search-input" name="platform" placeholder="nuova piattaforma…" style="flex:1;"><button type="submit" class="btn-secondary" style="flex:none;">+</button></form>'
+    + '</div>'
+    + '<div class="section-card"><h3>Sincronizzazione</h3><p class="muted">Il Piano Editoriale usa la stessa sincronizzazione del catalogo giochi: tutto quello che vedi qui viaggia insieme a giochi, wishlist e progetti quando premi ⬇/⬆ nel menu laterale.</p></div>'
+    + (count ? '<div class="section-card"><h3 style="color:var(--danger);">⚠️ Danger zone</h3><p class="muted">Elimina definitivamente tutti i ' + count + ' contenuti e le loro timeline. Tipi personalizzati e piattaforme restano.</p><button class="btn-danger" data-action="ed-reset-contents">🗑️ Svuota piano editoriale</button></div>' : '');
+}
+
+function renderEditorialPage(){
+  var tabs = ''
+    + '<div class="tabs">'
+    + '<button class="tab-btn' + (UI.edTab === 'piano' ? ' active' : '') + '" data-action="ed-tab" data-value="piano">📋 Piano</button>'
+    + '<button class="tab-btn' + (UI.edTab === 'tipi' ? ' active' : '') + '" data-action="ed-tab" data-value="tipi">🏷️ Tipi</button>'
+    + '<button class="tab-btn' + (UI.edTab === 'dati' ? ' active' : '') + '" data-action="ed-tab" data-value="dati">⚙️ Dati</button>'
+    + '</div>';
+  var total = DB.editorial.contents.length;
+  var pub = DB.editorial.contents.filter(function(c){ return c.status === 'pubblicato'; }).length;
+  var body = UI.edTab === 'tipi' ? edTypesTabHtml() : (UI.edTab === 'dati' ? edDataTabHtml() : edPlanTabHtml());
+  return ''
+    + '<div class="page-head"><h2>📋 Piano Editoriale <span class="count-pill">' + total + '</span></h2><button class="btn-icon" data-action="open-ed-guide" title="Guida">?</button></div>'
+    + (total ? '<p class="muted" style="margin-top:-10px;">' + pub + ' pubblicati su ' + total + '</p>' : '')
+    + tabs
+    + body;
+}
+
+function openEdGuideModal(){
+  var html = ''
+    + '<h3>📋 Guida rapida</h3>'
+    + '<h4>Il flusso</h4><p class="muted">Ogni contenuto passa (senza obblighi) da <b>Idea</b> → <b>Scheletro</b> (la timeline) → <b>Script</b> → <b>Materiali</b> → <b>Pubblicato</b>. Non serve avere già tutto definito per iniziare.</p>'
+    + '<h4>La timeline</h4><p class="muted">Non è un editor video: è il LEGO del tuo contenuto. Ogni blocco è un momento (es. l\'apertura della scatola, la prima reazione, un consiglio rapido). Puoi mettere più elementi nello stesso blocco e l\'ordine è completamente libero.</p>'
+    + '<p class="muted">Tocca un blocco per modificarlo. Trascina dalla maniglia ⠿ per riordinare, oppure usa i pulsanti ▲▼ nella lista contenuti.</p>'
+    + '<h4>Tipi personalizzati</h4><p class="muted">Se un tipo che ti serve non esiste, crealo al volo dal blocco stesso, oppure dalla scheda "Tipi".</p>'
+    + '<h4>Sync</h4><p class="muted">I dati viaggiano insieme a tutto il resto di Dicetidice: usa ⬇ pull e ⬆ push dal menu laterale.</p>'
+    + '<div class="modal-actions"><button type="button" class="btn-secondary" data-action="modal-close">Chiudi</button></div>';
+  openModal(html);
+}
+
+/* ---- dettaglio contenuto ---- */
+function edInfoSubviewHtml(c){
+  var platChips = DB.editorial.platforms.map(function(p){
+    var on = c.platforms.indexOf(p) !== -1;
+    return '<button type="button" class="chip chip-btn' + (on ? ' active' : '') + '" data-action="ed-toggle-platform" data-id="' + c.id + '" data-platform="' + escapeHtml(p) + '">' + escapeHtml(p) + '</button>';
+  }).join('') || '<p class="muted">Nessuna piattaforma configurata — aggiungine una nella scheda "Dati".</p>';
+  return ''
+    + '<div class="field"><label>Titolo</label><input type="text" value="' + escapeHtml(c.title) + '" placeholder="es. Recensione lampo: Sky Team" data-action-change="ed-save-title" data-id="' + c.id + '"></div>'
+    + '<div class="field"><label>Idea (di cosa parla)</label><textarea placeholder="in due righe: qual è l\'idea del contenuto" data-action-change="ed-save-idea" data-id="' + c.id + '">' + escapeHtml(c.idea) + '</textarea></div>'
+    + '<div class="field-row">'
+    + '<div class="field"><label>Stato</label><select data-action-change="ed-save-status" data-id="' + c.id + '">' + ED_STATUSES.map(function(s){ return '<option value="' + s[0] + '"' + (c.status === s[0] ? ' selected' : '') + '>' + s[1] + '</option>'; }).join('') + '</select></div>'
+    + '<div class="field"><label>Categoria</label><input type="text" value="' + escapeHtml(c.category) + '" placeholder="es. recensione, unboxing, devlog…" data-action-change="ed-save-category" data-id="' + c.id + '"></div>'
+    + '</div>'
+    + '<div class="field"><label>Data prevista</label><input type="date" value="' + escapeHtml(c.dateExpected) + '" data-action-change="ed-save-date" data-id="' + c.id + '"></div>'
+    + '<div class="field"><label>Piattaforme</label><div class="chip-row">' + platChips + '</div></div>'
+    + '<div class="field"><label>Note</label><textarea placeholder="note libere" data-action-change="ed-save-notes" data-id="' + c.id + '">' + escapeHtml(c.notes) + '</textarea></div>';
+}
+function edBlockLabel(b){
+  if(b.title) return b.title;
+  var names = b.typeIds.map(function(id){ var t = edTypeById(id); return t ? t.name : null; }).filter(Boolean);
+  return names.length ? names.join(' + ') : '(vuoto — scegli un tipo)';
+}
+function edBlockColor(b){
+  var t = edTypeById(b.typeIds[0]);
+  return t ? edGroupColor(t.g) : '#8a8a8a';
+}
+function edTimelineSubviewHtml(c){
+  var blocks = c.timeline.slice().sort(function(a,b){ return (a.order||0) - (b.order||0); });
+  var total = blocks.reduce(function(a,b){ return a + (Number(b.duration)||0); }, 0);
+  var strip = blocks.length
+    ? blocks.map(function(b){
+        var w = Math.max(46, (Number(b.duration)||1) * 7);
+        var icons = b.typeIds.map(function(id){ var t = edTypeById(id); return t ? t.icon : ''; }).join('');
+        return '<div class="ed-tlseg" style="width:' + w + 'px;background:' + edBlockColor(b) + '" data-action="ed-open-block" data-content="' + c.id + '" data-block="' + b.id + '"><span>' + (icons || '▫️') + '</span><span>' + (b.duration||0) + 's</span></div>';
+      }).join('') + '<div class="ed-tladd" data-action="ed-add-block" data-content="' + c.id + '">+</div>'
+    : '<div class="ed-tladd" data-action="ed-add-block" data-content="' + c.id + '" style="min-width:100%;padding:14px;">+ aggiungi il primo blocco</div>';
+  var list = blocks.map(function(b, i){
+    var icons = b.typeIds.map(function(id){ var t = edTypeById(id); return t ? t.icon : ''; }).join(' ');
+    return '<div class="ed-bitem" data-ed-bdrag="' + b.id + '">'
+      + '<span class="ed-grip" data-ed-grip>⠿</span>'
+      + '<span class="ed-bbar" style="background:' + edBlockColor(b) + '"></span>'
+      + '<div class="ed-bbody" data-action="ed-open-block" data-content="' + c.id + '" data-block="' + b.id + '">'
+      + '<div class="ed-btitle">' + (i+1) + '. ' + (icons ? icons + ' ' : '') + escapeHtml(edBlockLabel(b)) + '</div>'
+      + (b.script ? '<div class="ed-bdesc">' + escapeHtml(b.script) + '</div>' : '')
+      + '<div class="ed-bmeta"><span>' + (b.duration||0) + 's</span>' + (b.media ? '<span>📎 ' + escapeHtml(b.media) + '</span>' : '') + '</div>'
+      + '</div>'
+      + '<div class="ed-bacts">'
+      + '<button type="button" data-action="ed-dup-block" data-content="' + c.id + '" data-block="' + b.id + '" title="Duplica">⧉</button>'
+      + '<button type="button" data-action="ed-del-block" data-content="' + c.id + '" data-block="' + b.id + '" title="Elimina">✕</button>'
+      + '</div></div>';
+  }).join('');
+  return ''
+    + '<p class="muted" style="margin-top:0;">Progetta lo scheletro audiovisivo: aggiungi blocchi, scegli cosa contengono, quanto durano e in che ordine vengono.</p>'
+    + '<div class="ed-tlruler"><span>0s</span><span>' + total + 's totali · ' + blocks.length + ' blocchi</span></div>'
+    + '<div class="ed-tlstrip">' + strip + '</div>'
+    + '<div class="blist" id="ed-block-list" data-content-id="' + c.id + '">' + list + '</div>'
+    + '<button class="btn-primary" style="width:100%;" data-action="ed-add-block" data-content="' + c.id + '">+ Aggiungi blocco</button>';
+}
+function renderEdContentDetail(id){
+  var c = edFindContent(id);
+  if(!c){
+    return '<div class="empty-state"><div class="big">📋</div><p>Contenuto non trovato.</p><a class="btn-link" href="#/editorial">← Torna al piano</a></div>';
+  }
+  var subLabels = { info: 'Scheda', timeline: 'Timeline' + (c.timeline.length ? ' (' + c.timeline.length + ')' : ''), script: 'Script', materiali: 'Materiali' };
+  var nav = ['info','timeline','script','materiali'].map(function(s){
+    return '<button class="tab-btn' + (UI.edContentSub === s ? ' active' : '') + '" data-action="ed-content-sub" data-value="' + s + '">' + subLabels[s] + '</button>';
+  }).join('');
+  var body;
+  if(UI.edContentSub === 'timeline') body = edTimelineSubviewHtml(c);
+  else if(UI.edContentSub === 'script') body = '<div class="field"><textarea style="min-height:280px;" placeholder="Scrivi qui il parlato/voice-over, per intero o diviso per blocco…" data-action-change="ed-save-script" data-id="' + c.id + '">' + escapeHtml(c.script) + '</textarea></div>';
+  else if(UI.edContentSub === 'materiali') body = '<div class="field"><textarea style="min-height:240px;" placeholder="Cosa devi ancora girare, cercare o recuperare prima che il contenuto sia pronto…" data-action-change="ed-save-materials" data-id="' + c.id + '">' + escapeHtml(c.materials) + '</textarea></div>';
+  else body = edInfoSubviewHtml(c);
+  return ''
+    + '<a class="back-link" href="#/editorial">← Torna al piano</a>'
+    + '<div class="detail-head"><h2>' + escapeHtml(c.title || '(senza titolo)') + '</h2>'
+    + '<button class="btn-icon" data-action="ed-delete-content" data-id="' + c.id + '" title="Elimina">🗑️</button></div>'
+    + '<div class="tabs">' + nav + '</div>'
+    + body;
+}
+
+/* ---- editor blocco ---- */
+function edTypeGridHtml(){
+  return Object.keys(ED_GROUPS).map(function(g){
+    var items = edAllTypes().filter(function(t){ return t.g === g; });
+    if(!items.length) return '';
+    var chips = items.map(function(t){
+      var on = EDBLOCKSEL.has(t.id);
+      var style = on ? 'background:' + ED_GROUPS[g].color + ';border-color:' + ED_GROUPS[g].color + ';' : '';
+      return '<button type="button" class="ed-tchip' + (on ? ' sel' : '') + '" style="' + style + '" data-action="ed-toggle-type" data-tid="' + t.id + '">' + t.icon + ' ' + escapeHtml(t.name) + '</button>';
+    }).join('');
+    return '<div class="ed-tgroup"><div class="ed-tgrouplabel" style="color:' + ED_GROUPS[g].color + ';">' + ED_GROUPS[g].label + '</div><div class="ed-tgrid">' + chips + '</div></div>';
+  }).join('');
+}
+function openEdBlockModal(contentId, blockId){
+  var c = edFindContent(contentId);
+  if(!c) return;
+  var b = blockId ? c.timeline.find(function(x){ return x.id === blockId; }) : null;
+  EDBLOCKSEL = new Set(b ? b.typeIds : []);
+  var html = ''
+    + '<h3>' + (blockId ? 'Modifica blocco' : 'Nuovo blocco') + '</h3>'
+    + '<form data-form="ed-block-form" data-content="' + contentId + '" data-block="' + (blockId||'') + '">'
+    + '<div class="field"><label>Cosa contiene questo momento (uno o più)</label><div id="ed-block-typegrid">' + edTypeGridHtml() + '</div>'
+    + '<button type="button" class="btn-link" data-action="ed-new-type-inline">+ nuovo tipo al volo</button></div>'
+    + '<div class="field"><label>Titolo (opzionale — altrimenti uso i tipi scelti)</label><input type="text" name="title" value="' + escapeHtml(b ? b.title : '') + '" placeholder="es. l\'apertura della scatola"></div>'
+    + '<div class="field"><label>Durata stimata (sec)</label><div class="ed-dur-stepper"><button type="button" data-action="ed-dur-minus">−</button><input type="number" name="duration" min="0" value="' + (b ? b.duration : 4) + '" style="flex:1;"><button type="button" data-action="ed-dur-plus">+</button></div></div>'
+    + '<div class="field"><label>Testo/script per questo momento</label><textarea name="script" placeholder="cosa dici/scrivi in questo punto">' + escapeHtml(b ? b.script : '') + '</textarea></div>'
+    + '<div class="field"><label>Media/file associato (nome, link, riferimento)</label><input type="text" name="media" value="' + escapeHtml(b ? b.media : '') + '" placeholder="es. unboxing_skyteam.mp4, o link"></div>'
+    + '<div class="field"><label>Note</label><textarea name="note" placeholder="appunti su questo blocco">' + escapeHtml(b ? b.note : '') + '</textarea></div>'
+    + '<div class="modal-actions" style="justify-content:flex-start;gap:8px;">'
+    + (blockId ? '<button type="button" class="btn-secondary" data-action="ed-dup-block-modal" data-content="' + contentId + '" data-block="' + blockId + '">Duplica</button>' : '')
+    + (blockId ? '<button type="button" class="btn-danger" data-action="ed-del-block-modal" data-content="' + contentId + '" data-block="' + blockId + '">Elimina</button>' : '')
+    + '</div>'
+    + '<div class="modal-actions"><button type="button" class="btn-secondary" data-action="modal-close">Annulla</button><button type="submit" class="btn-primary">Salva blocco</button></div>'
+    + '</form>';
+  openModal(html);
+}
+function handleEdBlockFormSubmit(form){
+  var contentId = form.dataset.content;
+  var blockId = form.dataset.block;
+  var c = edFindContent(contentId);
+  if(!c) return;
+  var fd = new FormData(form);
+  var duration = Math.max(0, Number(fd.get('duration')) || 0);
+  var typeIds = Array.from(EDBLOCKSEL);
+  var title = (fd.get('title')||'').toString().trim();
+  var script = (fd.get('script')||'').toString();
+  var media = (fd.get('media')||'').toString().trim();
+  var note = (fd.get('note')||'').toString();
+  if(blockId){
+    var b = c.timeline.find(function(x){ return x.id === blockId; });
+    if(b){ b.typeIds = typeIds; b.title = title; b.duration = duration; b.script = script; b.media = media; b.note = note; }
+  } else {
+    var order = c.timeline.length ? Math.max.apply(null, c.timeline.map(function(x){ return x.order||0; })) + 1 : 0;
+    c.timeline.push({ id: uid('blk'), order: order, typeIds: typeIds, title: title, duration: duration, script: script, media: media, note: note });
+  }
+  saveDB(); closeModal(); UI.edContentSub = 'timeline'; render();
+  toast(blockId ? 'Blocco aggiornato' : 'Blocco aggiunto');
+}
+
+/* ---- editor tipo ---- */
+function openEdTypeModal(id){
+  var t = id ? edTypeById(id) : null;
+  var isCustom = !id || !ED_BUILTIN_TYPES.some(function(x){ return x.id === id; });
+  var html = ''
+    + '<h3>' + (id ? 'Modifica tipo' : 'Nuovo tipo personalizzato') + '</h3>'
+    + '<form data-form="ed-type-form" data-id="' + (id||'') + '">'
+    + '<div class="field"><label>Nome</label><input type="text" name="name" required value="' + escapeHtml(t ? t.name : '') + '" placeholder="es. Intervista telefonica"></div>'
+    + '<div class="field-row">'
+    + '<div class="field"><label>Icona (una emoji)</label><input type="text" name="icon" maxlength="4" value="' + escapeHtml(t ? t.icon : '🔹') + '"></div>'
+    + '<div class="field"><label>Gruppo</label><select name="group">' + Object.keys(ED_GROUPS).map(function(g){ return '<option value="' + g + '"' + (t && t.g === g ? ' selected' : '') + '>' + ED_GROUPS[g].label + '</option>'; }).join('') + '</select></div>'
+    + '</div>'
+    + '<p class="muted">Il colore del post-it segue quello del gruppo scelto.</p>'
+    + '<div class="modal-actions">'
+    + (id && isCustom ? '<button type="button" class="btn-danger" data-action="ed-delete-type" data-id="' + id + '">Elimina</button>' : '<span></span>')
+    + '<button type="button" class="btn-secondary" data-action="modal-close">Annulla</button>'
+    + '<button type="submit" class="btn-primary">Salva tipo</button>'
+    + '</div>'
+    + '</form>';
+  openModal(html);
+}
+function handleEdTypeFormSubmit(form){
+  var id = form.dataset.id;
+  var fd = new FormData(form);
+  var name = (fd.get('name')||'').toString().trim();
+  if(!name){ toast('Il nome è obbligatorio'); return; }
+  var icon = (fd.get('icon')||'').toString().trim() || '🔹';
+  var group = fd.get('group') || 'video';
+  if(id){
+    var t = DB.editorial.customTypes.find(function(x){ return x.id === id; });
+    if(t){ t.name = name; t.icon = icon; t.g = group; }
+  } else {
+    DB.editorial.customTypes.push({ id: uid('ct'), g: group, name: name, icon: icon });
+  }
+  saveDB(); closeModal(); render(); toast('Tipo salvato');
+}
+function handleEdPlatFormSubmit(form){
+  var fd = new FormData(form);
+  var v = (fd.get('platform')||'').toString().trim();
+  if(v && DB.editorial.platforms.indexOf(v) === -1){ DB.editorial.platforms.push(v); saveDB(); }
+  render();
+}
+
+/* ---- drag reorder: lista contenuti (press-and-hold) ---- */
+function edContentPointerDown(e){
+  if(edReorderable() === false) return;
+  if(e.target.closest('[data-action]')) return;
+  var item = e.target.closest('[data-ed-drag]');
+  if(!item || !item.dataset.edDrag) return;
+  var startX = e.clientX, startY = e.clientY, began = false, timer;
+  function cleanup(){ clearTimeout(timer); document.removeEventListener('pointermove', onMove); document.removeEventListener('pointerup', onUp); }
+  function onMove(ev){ if(began) return; if(Math.abs(ev.clientX-startX) > 8 || Math.abs(ev.clientY-startY) > 8) cleanup(); }
+  function onUp(){ if(!began) cleanup(); }
+  timer = setTimeout(function(){ began = true; cleanup(); edBeginContentDrag(item, startY); }, 260);
+  document.addEventListener('pointermove', onMove);
+  document.addEventListener('pointerup', onUp, { once: true });
+}
+function edBeginContentDrag(item, startY){
+  var list = document.getElementById('ed-content-list');
+  if(!list) return;
+  var rect = item.getBoundingClientRect();
+  var ph = document.createElement('div'); ph.className = 'ed-ph'; ph.style.height = rect.height + 'px';
+  item.after(ph);
+  var clone = item.cloneNode(true); clone.classList.add('ed-clone');
+  clone.style.width = rect.width + 'px'; clone.style.left = rect.left + 'px'; clone.style.top = rect.top + 'px';
+  document.body.appendChild(clone);
+  item.style.display = 'none';
+  EDCDRAG = { item: item, ph: ph, clone: clone, offsetY: startY - rect.top, list: list };
+  document.addEventListener('pointermove', edContentDragMove);
+  document.addEventListener('pointerup', edContentDragUp, { once: true });
+}
+function edContentDragMove(e){
+  if(!EDCDRAG) return;
+  if(e.cancelable) e.preventDefault();
+  EDCDRAG.clone.style.top = (e.clientY - EDCDRAG.offsetY) + 'px';
+  var els = Array.prototype.filter.call(EDCDRAG.list.querySelectorAll('[data-ed-drag]'), function(x){ return x.style.display !== 'none' && x.dataset.edDrag; });
+  var placed = false;
+  for(var i=0;i<els.length;i++){
+    var r = els[i].getBoundingClientRect();
+    if(e.clientY < r.top + r.height/2){ els[i].before(EDCDRAG.ph); placed = true; break; }
+  }
+  if(!placed) EDCDRAG.list.appendChild(EDCDRAG.ph);
+}
+function edContentDragUp(){
+  if(!EDCDRAG) return;
+  document.removeEventListener('pointermove', edContentDragMove);
+  var item = EDCDRAG.item, ph = EDCDRAG.ph, clone = EDCDRAG.clone, list = EDCDRAG.list;
+  ph.replaceWith(item);
+  item.style.display = '';
+  clone.remove();
+  var order = Array.prototype.map.call(list.querySelectorAll('[data-ed-drag]'), function(x){ return x.dataset.edDrag; }).filter(Boolean);
+  order.forEach(function(id, idx){ var c = edFindContent(id); if(c) c.order = idx; });
+  saveDB();
+  edSuppressClick = true; setTimeout(function(){ edSuppressClick = false; }, 60);
+  EDCDRAG = null;
+  updateEdContentList();
+}
+
+/* ---- drag reorder: blocchi timeline (maniglia) ---- */
+function edBlockPointerDown(e){
+  var grip = e.target.closest('[data-ed-grip]');
+  if(!grip) return;
+  var item = grip.closest('[data-ed-bdrag]');
+  if(!item) return;
+  var list = document.getElementById('ed-block-list');
+  if(!list) return;
+  var rect = item.getBoundingClientRect();
+  var ph = document.createElement('div'); ph.className = 'ed-ph'; ph.style.height = rect.height + 'px';
+  item.after(ph);
+  var clone = item.cloneNode(true); clone.classList.add('ed-clone');
+  clone.style.width = rect.width + 'px'; clone.style.left = rect.left + 'px'; clone.style.top = rect.top + 'px';
+  document.body.appendChild(clone);
+  item.style.display = 'none';
+  EDBDRAG = { item: item, ph: ph, clone: clone, offsetY: e.clientY - rect.top, list: list, contentId: list.dataset.contentId };
+  document.addEventListener('pointermove', edBlockDragMove);
+  document.addEventListener('pointerup', edBlockDragUp, { once: true });
+}
+function edBlockDragMove(e){
+  if(!EDBDRAG) return;
+  if(e.cancelable) e.preventDefault();
+  EDBDRAG.clone.style.top = (e.clientY - EDBDRAG.offsetY) + 'px';
+  var els = Array.prototype.filter.call(EDBDRAG.list.querySelectorAll('[data-ed-bdrag]'), function(x){ return x.style.display !== 'none'; });
+  var placed = false;
+  for(var i=0;i<els.length;i++){
+    var r = els[i].getBoundingClientRect();
+    if(e.clientY < r.top + r.height/2){ els[i].before(EDBDRAG.ph); placed = true; break; }
+  }
+  if(!placed) EDBDRAG.list.appendChild(EDBDRAG.ph);
+}
+function edBlockDragUp(){
+  if(!EDBDRAG) return;
+  document.removeEventListener('pointermove', edBlockDragMove);
+  var item = EDBDRAG.item, ph = EDBDRAG.ph, clone = EDBDRAG.clone, list = EDBDRAG.list, contentId = EDBDRAG.contentId;
+  ph.replaceWith(item);
+  item.style.display = '';
+  clone.remove();
+  var order = Array.prototype.map.call(list.querySelectorAll('[data-ed-bdrag]'), function(x){ return x.dataset.edBdrag; });
+  var c = edFindContent(contentId);
+  if(c) order.forEach(function(bid, idx){ var b = c.timeline.find(function(x){ return x.id === bid; }); if(b) b.order = idx; });
+  saveDB();
+  EDBDRAG = null;
+  render();
+}
+
+function edMoveContent(id, dir){
+  var arr = edSortedContents();
+  var i = arr.findIndex(function(c){ return c.id === id; });
+  var j = i + dir;
+  if(i < 0 || j < 0 || j >= arr.length) return;
+  var tmp = arr[i]; arr[i] = arr[j]; arr[j] = tmp;
+  arr.forEach(function(c, idx){ c.order = idx; });
+  saveDB(); render();
+}
+
 /* ================= RANDOMIZER ================= */
 function eligibleGames(){
   return DB.games.filter(function(g){ return !g.forSale; }).filter(function(g){
@@ -1299,6 +1827,7 @@ function render(){
     case 'sell': html = renderSellPage(); break;
     case 'designer': html = renderDesignerPage(); break;
     case 'randomizer': html = renderRandomizerPage(); break;
+    case 'editorial': html = parts[1] ? renderEdContentDetail(parts[1]) : renderEditorialPage(); break;
     default: html = renderListPage(); page = 'list';
   }
   app.innerHTML = html;
@@ -1328,6 +1857,7 @@ function toggleTheme(){
 
 /* ================= EVENT DELEGATION ================= */
 document.addEventListener('click', function(e){
+  if(edSuppressClick){ edSuppressClick = false; e.preventDefault(); return; }
   if(e.target.classList && e.target.classList.contains('modal-backdrop')){ closeModal(); return; }
   var el = e.target.closest('[data-action]');
   if(!el) return;
@@ -1462,6 +1992,123 @@ document.addEventListener('click', function(e){
     case 'export-json': exportJson(); break;
     case 'reload-app': location.reload(); break;
     case 'cleanup-unplayed-bgg': cleanupUnplayedBggGames(); break;
+
+    case 'ed-tab': UI.edTab = el.dataset.value; render(); break;
+    case 'ed-content-sub': UI.edContentSub = el.dataset.value; render(); break;
+    case 'open-ed-guide': openEdGuideModal(); break;
+    case 'add-ed-content': {
+      var edOrder = DB.editorial.contents.length ? Math.max.apply(null, DB.editorial.contents.map(function(c){ return c.order||0; })) + 1 : 0;
+      var newEdContent = { id: uid('ed'), title: '', idea: '', status: 'idea', category: '', dateExpected: '', platforms: [], notes: '', script: '', materials: '', timeline: [], createdAt: Date.now(), order: edOrder };
+      DB.editorial.contents.push(newEdContent);
+      saveDB();
+      UI.edContentSub = 'info';
+      location.hash = '#/editorial/' + newEdContent.id;
+      break;
+    }
+    case 'ed-delete-content':
+      if(confirm('Eliminare questo contenuto e tutta la sua timeline? Azione non annullabile.')){
+        DB.editorial.contents = DB.editorial.contents.filter(function(c){ return c.id !== id; });
+        saveDB();
+        location.hash = '#/editorial';
+      }
+      break;
+    case 'ed-move-up': edMoveContent(id, -1); break;
+    case 'ed-move-down': edMoveContent(id, 1); break;
+    case 'ed-toggle-platform': {
+      var edc = edFindContent(id);
+      if(edc){
+        var pIdx = edc.platforms.indexOf(el.dataset.platform);
+        if(pIdx >= 0) edc.platforms.splice(pIdx, 1); else edc.platforms.push(el.dataset.platform);
+        saveDB(); render();
+      }
+      break;
+    }
+    case 'ed-remove-platform':
+      DB.editorial.platforms = DB.editorial.platforms.filter(function(p){ return p !== el.dataset.platform; });
+      saveDB(); render();
+      break;
+    case 'ed-reset-contents':
+      if(confirm('Eliminare definitivamente tutti i contenuti del piano editoriale? Tipi personalizzati e piattaforme restano. Azione non annullabile.')){
+        DB.editorial.contents = [];
+        saveDB(); render(); toast('Piano editoriale svuotato');
+      }
+      break;
+    case 'ed-add-type': openEdTypeModal(null); break;
+    case 'ed-edit-type': openEdTypeModal(id); break;
+    case 'ed-delete-type':
+      if(confirm('Eliminare questo tipo? Resterà nei blocchi che lo usano già come testo semplice, ma non sarà più selezionabile.')){
+        DB.editorial.customTypes = DB.editorial.customTypes.filter(function(x){ return x.id !== id; });
+        saveDB(); closeModal(); render();
+      }
+      break;
+    case 'ed-open-block': openEdBlockModal(el.dataset.content, el.dataset.block); break;
+    case 'ed-add-block': openEdBlockModal(el.dataset.content, null); break;
+    case 'ed-dup-block': case 'ed-dup-block-modal': {
+      var edc2 = edFindContent(el.dataset.content);
+      var b2 = edc2 && edc2.timeline.find(function(x){ return x.id === el.dataset.block; });
+      if(edc2 && b2){
+        var order2 = edc2.timeline.length ? Math.max.apply(null, edc2.timeline.map(function(x){ return x.order||0; })) + 1 : 0;
+        edc2.timeline.push(Object.assign({}, b2, { id: uid('blk'), order: order2 }));
+        saveDB();
+        if(action === 'ed-dup-block-modal') closeModal();
+        render(); toast('Blocco duplicato');
+      }
+      break;
+    }
+    case 'ed-del-block': case 'ed-del-block-modal': {
+      var edc3 = edFindContent(el.dataset.content);
+      if(edc3 && confirm('Eliminare questo blocco?')){
+        edc3.timeline = edc3.timeline.filter(function(x){ return x.id !== el.dataset.block; });
+        saveDB();
+        if(action === 'ed-del-block-modal') closeModal();
+        render();
+      }
+      break;
+    }
+    case 'ed-toggle-type':
+      if(EDBLOCKSEL.has(el.dataset.tid)) EDBLOCKSEL.delete(el.dataset.tid); else EDBLOCKSEL.add(el.dataset.tid);
+      var edGrid = document.getElementById('ed-block-typegrid');
+      if(edGrid) edGrid.innerHTML = edTypeGridHtml();
+      break;
+    case 'ed-dur-minus': {
+      var edDurInp = document.querySelector('input[name="duration"]');
+      if(edDurInp) edDurInp.value = Math.max(0, (Number(edDurInp.value)||0) - 1);
+      break;
+    }
+    case 'ed-dur-plus': {
+      var edDurInp2 = document.querySelector('input[name="duration"]');
+      if(edDurInp2) edDurInp2.value = (Number(edDurInp2.value)||0) + 1;
+      break;
+    }
+    case 'ed-new-type-inline': {
+      var existingPanel = document.getElementById('ed-inline-newtype');
+      if(existingPanel){ existingPanel.remove(); break; }
+      var panelHtml = '<div id="ed-inline-newtype" class="section-card" style="margin-top:10px;">'
+        + '<div class="field"><label>Nome</label><input type="text" id="ed-nt-name" placeholder="es. Intervista telefonica"></div>'
+        + '<div class="field-row">'
+        + '<div class="field"><label>Icona (emoji)</label><input type="text" id="ed-nt-icon" value="🔹" maxlength="4"></div>'
+        + '<div class="field"><label>Gruppo</label><select id="ed-nt-group">' + Object.keys(ED_GROUPS).map(function(g){ return '<option value="' + g + '">' + ED_GROUPS[g].label + '</option>'; }).join('') + '</select></div>'
+        + '</div>'
+        + '<button type="button" class="btn-primary" data-action="ed-save-inline-type">Crea e seleziona</button>'
+        + '</div>';
+      el.insertAdjacentHTML('afterend', panelHtml);
+      break;
+    }
+    case 'ed-save-inline-type': {
+      var ntName = document.getElementById('ed-nt-name');
+      var ntNameVal = ntName ? ntName.value.trim() : '';
+      if(!ntNameVal){ toast('Serve un nome'); break; }
+      var ntIcon = (document.getElementById('ed-nt-icon') || {}).value || '🔹';
+      var ntGroup = (document.getElementById('ed-nt-group') || {}).value || 'video';
+      var newEdType = { id: uid('ct'), g: ntGroup, name: ntNameVal, icon: ntIcon };
+      DB.editorial.customTypes.push(newEdType);
+      saveDB();
+      EDBLOCKSEL.add(newEdType.id);
+      var ntPanel = document.getElementById('ed-inline-newtype'); if(ntPanel) ntPanel.remove();
+      var ntGrid = document.getElementById('ed-block-typegrid'); if(ntGrid) ntGrid.innerHTML = edTypeGridHtml();
+      toast('Tipo creato');
+      break;
+    }
   }
 });
 
@@ -1491,6 +2138,14 @@ document.addEventListener('change', function(e){
     handleCoverFileUpload(el.files[0]);
     return;
   }
+  if(el.matches('select[data-action-change="ed-status-filter"]')){ UI.edStatusFilter = el.value; render(); return; }
+  var edFieldMap = { 'ed-save-title':'title', 'ed-save-idea':'idea', 'ed-save-status':'status', 'ed-save-category':'category', 'ed-save-date':'dateExpected', 'ed-save-notes':'notes', 'ed-save-script':'script', 'ed-save-materials':'materials' };
+  var edFieldKey = el.dataset.actionChange;
+  if(edFieldKey && edFieldMap[edFieldKey]){
+    var edc = edFindContent(el.dataset.id);
+    if(edc){ edc[edFieldMap[edFieldKey]] = el.value; saveDB(); render(); }
+    return;
+  }
 });
 
 document.addEventListener('submit', function(e){
@@ -1502,6 +2157,9 @@ document.addEventListener('submit', function(e){
       case 'wishlist-form': handleWishlistFormSubmit(form); break;
       case 'project-form': handleProjectFormSubmit(form); break;
       case 'idea-form': handleIdeaFormSubmit(form); break;
+      case 'ed-block-form': handleEdBlockFormSubmit(form); break;
+      case 'ed-type-form': handleEdTypeFormSubmit(form); break;
+      case 'ed-plat-form': handleEdPlatFormSubmit(form); break;
       case 'token-form': {
         var fd = new FormData(form);
         var val = (fd.get('token') || '').toString().trim();
@@ -1522,7 +2180,10 @@ document.addEventListener('input', function(e){
   if(el.matches('input[data-search="randomizer"]')){ UI.rand.playerCount = el.value; UI.rand.resultId = null; updateRandStage(); return; }
   if(el.matches('input[data-search="bgg-reference"]')){ updateBggSearchResults(el.value); return; }
   if(el.matches('input[data-search="cover-preview"]')){ updateCoverPreview(el.value); return; }
+  if(el.matches('input[data-search="editorial"]')){ UI.edSearch = el.value; updateEdContentList(); return; }
 });
+document.addEventListener('pointerdown', function(e){ edContentPointerDown(e); edBlockPointerDown(e); });
+document.addEventListener('touchmove', function(e){ if(EDCDRAG || EDBDRAG) e.preventDefault(); }, { passive: false });
 
 window.addEventListener('hashchange', render);
 window.addEventListener('resize', function(){ if(window.innerWidth >= 960){ sidebar.classList.remove('open'); overlay.classList.remove('show'); } });
