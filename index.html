@@ -446,7 +446,7 @@ hr{border:none; border-top:1px solid var(--border); margin:1.2em 0;}
 'use strict';
 
 /* ---------- Costanti ---------- */
-var APP_BUILD = 'build 14 · 2026-10-07';
+var APP_BUILD = 'build 15 · 2026-10-08';
 var STORAGE_KEY = 'dicetidice_db_v1';
 var TOKEN_KEY = 'dicetidice_gh_token';
 var GIST_ID_KEY = 'dicetidice_gist_id';
@@ -868,6 +868,10 @@ function renderListPage(){
   var hasFilters = UI.mechFilters.size || UI.typeFilters.size || UI.listSearch;
   return ''
     + '<div class="page-head"><h2>📚 Lista giochi <span class="count-pill">' + DB.games.length + '</span></h2><button class="btn-primary" data-action="open-add-game">+ Nuovo gioco</button></div>'
+    + '<div class="chip-row" style="margin-bottom:14px;">'
+    + '<button type="button" class="btn-secondary" data-action="export-games-json">⬇️ Esporta catalogo</button>'
+    + '<label class="btn-secondary" style="display:inline-flex;align-items:center;cursor:pointer;">⬆️ Importa catalogo<input type="file" accept="application/json" data-action-change="import-games-json" style="display:none"></label>'
+    + '</div>'
     + '<div class="search-wrap"><input type="text" class="search-input" placeholder="Cerca per nome…" value="' + escapeHtml(UI.listSearch) + '" data-search="games"></div>'
     + '<details class="filters-block"' + (UI.typeFilters.size ? ' open' : '') + '><summary>Tipologia' + (UI.typeFilters.size ? '<span class="filter-count">(' + UI.typeFilters.size + ')</span>' : '') + '</summary><div class="chip-row">' + typeChips + '</div></details>'
     + '<details class="filters-block"' + (UI.mechFilters.size ? ' open' : '') + '><summary>Meccaniche' + (UI.mechFilters.size ? '<span class="filter-count">(' + UI.mechFilters.size + ')</span>' : '') + '</summary><div class="chip-row">' + mechChips + '</div></details>'
@@ -1745,6 +1749,37 @@ function importJsonFile(file){
   };
   reader.readAsText(file);
 }
+function exportGamesJson(){
+  var payload = { type: 'dicetidice-games', version: 1, exportedAt: new Date().toISOString(), games: DB.games };
+  var blob = new Blob([JSON.stringify(payload, null, 2)], { type:'application/json' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url; a.download = 'dicetidice_catalogo_giochi_' + todayISO() + '.json';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
+  toast('Catalogo esportato (' + DB.games.length + ' giochi)');
+}
+function importGamesJsonFile(file){
+  var reader = new FileReader();
+  reader.onload = function(){
+    try{
+      var parsed = JSON.parse(reader.result);
+      var games = Array.isArray(parsed) ? parsed : (parsed && Array.isArray(parsed.games) ? parsed.games : null);
+      if(!games) throw new Error('il file non contiene un elenco di giochi valido');
+      games.forEach(function(g){
+        if(!Array.isArray(g.plays)) g.plays = [];
+        if(!Array.isArray(g.mechanics)) g.mechanics = [];
+        if(typeof g.forSale !== 'boolean') g.forSale = false;
+        if(!g.id) g.id = uid('game');
+      });
+      if(!confirm('Sostituire il catalogo attuale (' + DB.games.length + ' giochi) con quello importato (' + games.length + ' giochi)? Wishlist, piano editoriale e il resto dei dati non vengono toccati. Azione non annullabile.')) return;
+      DB.games = games;
+      saveDB(); render();
+      toast('Catalogo importato: ' + games.length + ' giochi');
+    }catch(err){ toast('File non valido: ' + err.message); }
+  };
+  reader.readAsText(file);
+}
 function cleanupUnplayedBggGames(){
   var candidates = DB.games.filter(function(g){ return g.bggId && g.plays.length === 0 && !g.confirmed; });
   if(!candidates.length){ toast('Nessun gioco da ripulire: tutti i giochi presenti sono stati aggiunti volontariamente o hanno partite registrate'); return; }
@@ -1990,6 +2025,7 @@ document.addEventListener('click', function(e){
     case 'gist-push': gistPush(); break;
     case 'gist-pull': gistPull(); break;
     case 'export-json': exportJson(); break;
+    case 'export-games-json': exportGamesJson(); break;
     case 'reload-app': location.reload(); break;
     case 'cleanup-unplayed-bgg': cleanupUnplayedBggGames(); break;
 
@@ -2132,6 +2168,11 @@ document.addEventListener('change', function(e){
   }
   if(el.matches('input[data-action-change="import-json"]') && el.files && el.files[0]){
     importJsonFile(el.files[0]);
+    return;
+  }
+  if(el.matches('input[data-action-change="import-games-json"]') && el.files && el.files[0]){
+    importGamesJsonFile(el.files[0]);
+    el.value = '';
     return;
   }
   if(el.matches('input[data-action-change="upload-cover"]') && el.files && el.files[0]){
